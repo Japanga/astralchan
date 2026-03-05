@@ -33,6 +33,6 @@ Catalog style view displays all images uploaded to that board's <i><b>upload/</b
 
 At the inside of each board folder directory is an <i><b>/admin.php</b></i>, where users enter in a private password stored only in the server-end version of the file where you define the your_admin_password hash (meaning regular users are completely unable to access it through methods like View page source.)
 
-<img src="https://imgur.com/a/TsheM8j" width="300">
+<img src="https://i.imgur.com/kUG4Bv0.png" width="300">
 
 Once you are inside, you can successfully use the "Delete" option next to all posts to remove it along with any individual replies. Posts can easily be backed-up by storing copies of your database folder.
