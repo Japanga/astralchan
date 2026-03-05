@@ -5,7 +5,7 @@ AstralChan is a lightweight PHP imageboard application hosted on XAMPP and Apach
 
 <img src="https://i.imgur.com/6cRz8kJ.png" width="300">
 
-Boards are created fast and instantly, and anything in the /boards/ directory is turned into clickable links across all of the other boards and the front home page.
+Boards are created fast and instantly, any folder in the /boards/ directory is turned into clickable links across all of the other boards and the front home page. Title data is retrieved from a titles.txt in each board.
 
 <img src="https://i.imgur.com/Tr7OSrV.png" width="300">
 
@@ -32,3 +32,7 @@ Catalog style view displays all images uploaded to that board's "upload/" folder
 <img src="https://i.imgur.com/iBE69uM.png" width="300">
 
 At the inside of each board folder directory is an admin.php, where users enter in a private password stored only in the server-end version of the file where you define the your_admin_password hash (meaning regular users are completely unable to access it through methods like View page source.)
+
+<img src="https://i.imgur.com/Ml8tHp1.png" width="300">
+
+Once you are inside, you can successfully use the "Delete" option next to all posts to remove it along with any individual replies. Posts can easily be backed-up by storing copies of your database folder.
