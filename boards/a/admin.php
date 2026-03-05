@@ -2,9 +2,7 @@
 // Configuration (must match index.php)
 $data_file = 'posts.json';
 $upload_dir = 'uploads/';
-$config_data = parse_ini_file('admin.cfg');
-$stored_hash = $config_data['ADMIN_PASSWORD_HASH'];
-$admin_password_hash = password_hash($stored_hash, PASSWORD_DEFAULT); // Use the same hash as in index.php
+$admin_password_hash = password_hash('your_admin_password', PASSWORD_DEFAULT); // Use the same hash as in index.php
 
 // Function to load posts
 function load_posts($file) {
@@ -38,6 +36,8 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
+
+
 // Check admin status
 if (!isset($_SESSION['admin_logged_in'])) {
     // Show login form
@@ -47,6 +47,44 @@ if (!isset($_SESSION['admin_logged_in'])) {
         Password: <input type="password" name="password">
         <input type="submit" name="admin_login" value="Login">
     </form>
+      <style>
+        body {
+          /* Ensure the container covers the desired area */
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  /* Define the "steel" gradient with shades of gray/silver */
+  background: linear-gradient(
+    -45deg,
+    #777777, /* Darker gray */
+    #aaaaaa, /* Medium gray */
+    #dddddd, /* Light gray/silver */
+    #aaaaaa,
+    #777777
+  );
+  /* Make the background size larger than the container to allow movement */
+  background-size: 400% 400%;
+  /* Apply the animation */
+  animation: steel-gradient-animation 15s ease infinite;
+}
+
+@keyframes steel-gradient-animation {
+  /* Animate the background-position property */
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+ 
+      input {
+  background-color: black; /* Or use the hex code #000000 */
+  color: white; /* Change the text color for better visibility on a black background */
+}
+    </style>
     <?php
     exit;
 }
@@ -86,3 +124,41 @@ if (isset($_GET['delete_id'])) {
 <h1>Admin Panel</h1>
 <p><a href="index.php">View site</a> | <a href="admin.php?logout=true">Logout</a></p>
 <p>Use the delete links on the main site (visible to admin when logged in) to manage posts.</p>
+    <style>
+        body {
+          /* Ensure the container covers the desired area */
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  /* Define the "steel" gradient with shades of gray/silver */
+  background: linear-gradient(
+    -45deg,
+    #777777, /* Darker gray */
+    #aaaaaa, /* Medium gray */
+    #dddddd, /* Light gray/silver */
+    #aaaaaa,
+    #777777
+  );
+  /* Make the background size larger than the container to allow movement */
+  background-size: 400% 400%;
+  /* Apply the animation */
+  animation: steel-gradient-animation 15s ease infinite;
+}
+
+@keyframes steel-gradient-animation {
+  /* Animate the background-position property */
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+ 
+      input {
+  background-color: black; /* Or use the hex code #000000 */
+  color: white; /* Change the text color for better visibility on a black background */
+}
+    </style>
