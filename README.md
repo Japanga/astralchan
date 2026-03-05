@@ -20,6 +20,8 @@ Styles are highly customizable, and a complex "tagging" system allows for direct
 Catalog style view displays all images uploaded to that board's "upload/" folder.
 
 ## How to INSTALL AstralChan
+<img src="https://i.imgur.com/YmOiBsG.png" width="300">
+
 1. Download the [XAMPP Control Panel](https://www.apachefriends.org/download.html) (developed on 3.3.0)
 2. Extract the contents of AstralChan to C:xampp/htdocs
 3. Open the XAMPP Control Panel in your Apache server
