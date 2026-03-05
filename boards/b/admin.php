@@ -43,7 +43,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
     // Show login form
     ?>
     <div class = "mainarea">
-    <span style="color: white;">
+    <span style="color: black;">
     <h1>Admin Login</h1>
     <form method="POST" action="admin.php">
         Password: <input type="password" name="password">
@@ -52,43 +52,26 @@ if (!isset($_SESSION['admin_logged_in'])) {
      </span>
     </div>
       <style>
-      body {
-  /* Dark Grey Steel Gradient */
-  background-color: #2c3e50; /* Fallback */
-  background-image: linear-gradient(135deg, #434343 0%, #000000 100%);
-  
-  /* Ensure full screen coverage */
-  min-height: 100vh;
-  margin: 0;
-  background-attachment: fixed;
+   body {
+    background-color: #2F4F4F; /* A dark steel color */
+    color: #fff; /* White text for contrast on the dark background */
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    /* This ensures the background covers the entire page and stays fixed on scroll */
+    background-attachment: fixed; 
+    min-height: 100vh;
 }
         .mainarea {
-          /* Ensure the container covers the desired area */
-  width: 40%;
-  height: 190px;  /* Full viewport height */
-  /* Define the "steel" gradient with shades of gray/silver */
-  /* Define a sharp metallic linear gradient */
-  background: linear-gradient(135deg, 
-    #000000 0%, 
-    #434343 25%, 
-    #ffffff 50%, 
-    #434343 75%, 
-    #000000 100%
-  );
-  
-  /* Make background larger than container to allow movement */
-  background-size: 400% 400%;
-  
-  /* Animate the movement */
-  animation: metalGradientAnimation 10s ease infinite;
+        /* Apply the white-grey gradient */
+    background-image: linear-gradient(to bottom, #FFFFFF, #D3D3D3); 
+    color: #333; /* Darker text for contrast on the light gradient */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow for a "hovering" effect */
+    /* Add some opacity to the gradient's container if you want the background to be slightly visible through it (optional) */
+    /* opacity: 0.95; */ 
 }
-
-@keyframes metalGradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
- 
       input {
   background-color: black; /* Or use the hex code #000000 */
   color: white; /* Change the text color for better visibility on a black background */
@@ -131,7 +114,7 @@ if (isset($_GET['delete_id'])) {
 ?>
 
  <div class = "mainarea2">
- <span style="color: white;">
+ <span style="color: black;">
 <h1>Admin Panel</h1>
  </span>
 <p><a href="index.php">View site</a> | <a href="admin.php?logout=true">Logout</a></p>
@@ -145,40 +128,24 @@ if (isset($_GET['delete_id'])) {
     font-size: 1em; /* Makes text "big" */
 }
     body {
-  /* Dark Grey Steel Gradient */
-  background-color: #2c3e50; /* Fallback */
-  background-image: linear-gradient(135deg, #434343 0%, #000000 100%);
-  
-  /* Ensure full screen coverage */
-  min-height: 100vh;
-  margin: 0;
-  background-attachment: fixed;
+    background-color: #2F4F4F; /* A dark steel color */
+    color: #fff; /* White text for contrast on the dark background */
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    /* This ensures the background covers the entire page and stays fixed on scroll */
+    background-attachment: fixed; 
+    min-height: 100vh;
 }
         .mainarea2 {
-          /* Ensure the container covers the desired area */
-  width: 40%;
-  height: 190px;  /* Full viewport height */
-  /* Define the "steel" gradient with shades of gray/silver */
-  /* Define a sharp metallic linear gradient */
-  background: linear-gradient(135deg, 
-    #000000 0%, 
-    #434343 25%, 
-    #ffffff 50%, 
-    #434343 75%, 
-    #000000 100%
-  );
-  
-  /* Make background larger than container to allow movement */
-  background-size: 400% 400%;
-  
-  /* Animate the movement */
-  animation: metalGradientAnimation 10s ease infinite;
-}
-
-@keyframes metalGradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+        /* Apply the white-grey gradient */
+    background-image: linear-gradient(to bottom, #FFFFFF, #D3D3D3); 
+    color: #333; /* Darker text for contrast on the light gradient */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow for a "hovering" effect */
+    /* Add some opacity to the gradient's container if you want the background to be slightly visible through it (optional) */
+    /* opacity: 0.95; */ 
 }
  
       input {
