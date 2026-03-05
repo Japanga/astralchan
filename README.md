@@ -17,7 +17,7 @@ Styles are highly customizable, and a complex "tagging" system allows for direct
 
 <img src="https://i.imgur.com/ZhRF1Td.png" width="300">
 
-Catalog style view displays all images uploaded to that board's "upload/" folder.
+Catalog style view displays all images uploaded to that board's <i><b>upload/</b></i>, folder.
 
 ## How to INSTALL AstralChan
 <img src="https://i.imgur.com/YmOiBsG.png" width="300">
@@ -25,14 +25,14 @@ Catalog style view displays all images uploaded to that board's "upload/" folder
 1. Download the [XAMPP Control Panel](https://www.apachefriends.org/download.html) (developed on 3.3.0)
 2. Extract the contents of AstralChan to C:xampp/htdocs
 3. Open the XAMPP Control Panel in your Apache server
-4. Visit the imageboard by going to localhost/index.php!
+4. Visit the imageboard by going to <i><b>localhost/index.php</b></i>!
 
 ## Moderation/Admin Tools: Deleting Posts
 
-<img src="https://i.imgur.com/iBE69uM.png" width="300">
+<img src="https://i.imgur.com/5K5PmSv.png" width="300">
 
-At the inside of each board folder directory is an admin.php, where users enter in a private password stored only in the server-end version of the file where you define the your_admin_password hash (meaning regular users are completely unable to access it through methods like View page source.)
+At the inside of each board folder directory is an <i><b>/admin.php</b></i>, where users enter in a private password stored only in the server-end version of the file where you define the your_admin_password hash (meaning regular users are completely unable to access it through methods like View page source.)
 
-<img src="https://i.imgur.com/Ml8tHp1.png" width="300">
+<img src="https://imgur.com/a/TsheM8j" width="300">
 
 Once you are inside, you can successfully use the "Delete" option next to all posts to remove it along with any individual replies. Posts can easily be backed-up by storing copies of your database folder.
