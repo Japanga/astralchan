@@ -13,4 +13,8 @@ Custom captcha system means no Cloudflare or Google reCaptcha systems are needed
 
 <img src="https://i.imgur.com/GAfsgNH.png" width="300">
 
-Styles are highly customizeable, and a complex "tagging" system allows for directly replying to # number IDs from previous posts.
+Styles are highly customizable, and a complex "tagging" system allows for directly replying to # number IDs from previous posts.
+
+<img src="https://i.imgur.com/ZhRF1Td.png" width="300">
+
+Catalog style view displays all images uploaded to that board's "upload/" folder.
