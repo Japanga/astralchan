@@ -42,42 +42,51 @@ if (isset($_GET['logout'])) {
 if (!isset($_SESSION['admin_logged_in'])) {
     // Show login form
     ?>
+    <div class = "mainarea">
+    <span style="color: white;">
     <h1>Admin Login</h1>
     <form method="POST" action="admin.php">
         Password: <input type="password" name="password">
         <input type="submit" name="admin_login" value="Login">
     </form>
+     </span>
+    </div>
       <style>
-        body {
+      body {
+  /* Dark Grey Steel Gradient */
+  background-color: #2c3e50; /* Fallback */
+  background-image: linear-gradient(135deg, #434343 0%, #000000 100%);
+  
+  /* Ensure full screen coverage */
+  min-height: 100vh;
+  margin: 0;
+  background-attachment: fixed;
+}
+        .mainarea {
           /* Ensure the container covers the desired area */
-  width: 100%;
-  height: 100vh; /* Full viewport height */
+  width: 40%;
+  height: 190px;  /* Full viewport height */
   /* Define the "steel" gradient with shades of gray/silver */
-  background: linear-gradient(
-    -45deg,
-    #777777, /* Darker gray */
-    #aaaaaa, /* Medium gray */
-    #dddddd, /* Light gray/silver */
-    #aaaaaa,
-    #777777
+  /* Define a sharp metallic linear gradient */
+  background: linear-gradient(135deg, 
+    #000000 0%, 
+    #434343 25%, 
+    #ffffff 50%, 
+    #434343 75%, 
+    #000000 100%
   );
-  /* Make the background size larger than the container to allow movement */
+  
+  /* Make background larger than container to allow movement */
   background-size: 400% 400%;
-  /* Apply the animation */
-  animation: steel-gradient-animation 15s ease infinite;
+  
+  /* Animate the movement */
+  animation: metalGradientAnimation 10s ease infinite;
 }
 
-@keyframes steel-gradient-animation {
-  /* Animate the background-position property */
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+@keyframes metalGradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
  
       input {
@@ -121,40 +130,49 @@ if (isset($_GET['delete_id'])) {
 }
 ?>
 
+ <div class = "mainarea2">
+ <span style="color: white;">
 <h1>Admin Panel</h1>
+ </span>
 <p><a href="index.php">View site</a> | <a href="admin.php?logout=true">Logout</a></p>
 <p>Use the delete links on the main site (visible to admin when logged in) to manage posts.</p>
+     </div>
     <style>
-        body {
+    body {
+  /* Dark Grey Steel Gradient */
+  background-color: #2c3e50; /* Fallback */
+  background-image: linear-gradient(135deg, #434343 0%, #000000 100%);
+  
+  /* Ensure full screen coverage */
+  min-height: 100vh;
+  margin: 0;
+  background-attachment: fixed;
+}
+        .mainarea2 {
           /* Ensure the container covers the desired area */
-  width: 100%;
-  height: 100vh; /* Full viewport height */
+  width: 40%;
+  height: 190px;  /* Full viewport height */
   /* Define the "steel" gradient with shades of gray/silver */
-  background: linear-gradient(
-    -45deg,
-    #777777, /* Darker gray */
-    #aaaaaa, /* Medium gray */
-    #dddddd, /* Light gray/silver */
-    #aaaaaa,
-    #777777
+  /* Define a sharp metallic linear gradient */
+  background: linear-gradient(135deg, 
+    #000000 0%, 
+    #434343 25%, 
+    #ffffff 50%, 
+    #434343 75%, 
+    #000000 100%
   );
-  /* Make the background size larger than the container to allow movement */
+  
+  /* Make background larger than container to allow movement */
   background-size: 400% 400%;
-  /* Apply the animation */
-  animation: steel-gradient-animation 15s ease infinite;
+  
+  /* Animate the movement */
+  animation: metalGradientAnimation 10s ease infinite;
 }
 
-@keyframes steel-gradient-animation {
-  /* Animate the background-position property */
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+@keyframes metalGradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
  
       input {
