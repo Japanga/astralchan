@@ -123,9 +123,9 @@ if (isset($_GET['delete_id'])) {
         }
 
         save_posts($data_file, $posts);
-        echo "<p>Post $post_id_to_delete and its immediate replies deleted.</p>";
+        echo "<b>Post $post_id_to_delete and its immediate replies deleted!</b>";
     } else {
-        echo "<p>Post not found.</p>";
+        echo "<b>Post not found!</b>";
     }
 }
 ?>
@@ -138,6 +138,12 @@ if (isset($_GET['delete_id'])) {
 <p>Use the delete links on the main site (visible to admin when logged in) to manage posts.</p>
      </div>
     <style>
+     b {
+    color: red;
+    font-weight: bold;
+          font-style: italic; 
+    font-size: 1em; /* Makes text "big" */
+}
     body {
   /* Dark Grey Steel Gradient */
   background-color: #2c3e50; /* Fallback */
