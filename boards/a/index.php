@@ -296,7 +296,7 @@ window.addEventListener('click', (event) => {
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 33%; /* Adjust width as needed */
+    width: 340px; /* Adjust width as needed */
     border-radius: 5px;
     text-align: center;
 }
