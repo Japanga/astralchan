@@ -10,3 +10,7 @@ Boards are created fast and instantly, and anything in the /boards/ directory is
 <img src="https://i.imgur.com/6tQ69WL.png" width="300">
 
 Custom captcha system means no Cloudflare or Google reCaptcha systems are needed.
+
+<img src="https://i.imgur.com/GAfsgNH.png" width="300">
+
+Styles are highly customizeable, and a complex "tagging" system allows for directly replying to # number IDs from previous posts.
