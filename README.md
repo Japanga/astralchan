@@ -1,7 +1,7 @@
-<img src="https://i.imgur.com/QA71TAY.png" width="300">
+<img src="https://i.imgur.com/dyJ1f8W.png" width="300">
 
 
-AstralChan is a lightweight PHP imageboard application. AstralChan was originally developed on XAMPP and Apache, but I found several other methods of being able to deploy the site's .PHP files. Thanks to AeonFree hosting, a live instance of the .PHP files is visitable at any time at [https://astralchan.hstn.me/index.php](https://astralchan.hstn.me/index.php) !
+AstralChan is a lightweight PHP imageboard application. AstralChan was originally developed on XAMPP Control Panel and Apache, but I found several other methods of being able to deploy the site project files. Thanks to AeonFree hosting, a live instance of the .PHP files is visitable at any time at [https://astralchan.hstn.me/index.php](https://astralchan.hstn.me/index.php) !
 
 <img src="https://i.imgur.com/6cRz8kJ.png" width="300">
 
@@ -28,7 +28,7 @@ Catalog style view displays all images uploaded to that board's <i><b>"upload/"<
 4. Visit the imageboard by going to <i><b>localhost/index.php</b></i>!
 
 ## How to deploy AstralChan method 2: PHP command prompt
-<img src="https://i.imgur.com/YmOiBsG.png" width="300">
+<img src="https://i.imgur.com/cttFxBu.png" width="300">
 
 1. Use cd to get to the directory of your AstralChan install.
 2. Temporarily change the system %PATH% directory to the location of your PHP install in command prompt.
