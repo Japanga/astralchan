@@ -69,13 +69,16 @@ function display_posts_recursive($posts, $parent_id = 0, $level = 0) {
     foreach ($posts as $post) {
         if ($post['parent_id'] == $parent_id) {
             echo "<div style='margin-left: " . ($level * 20) . "px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;'>";
-            echo "<p><b>Anonymous</b> <strong>No: " . $post['id'] . "</strong> <small>(" . $post['timestamp'] . ")</small></p>";
+            echo "<p><b><gt>Anonymous</gt></b> <strong>No: " . $post['id'] . "</strong> <small>(" . $post['timestamp'] . ")</small></p>";
             echo "<p>" . nl2br($post['content']) . "</p>";
             if ($post['image']) {
                 $size_bytes = filesize($post['image']); //
+               $imageType = exif_imagetype($post['image']);
+                $extension = image_type_to_extension($imageType); // e.g., '.png'
+    $mimeType = image_type_to_mime_type($imageType); // e.g., 'image/png'
                
                 echo "<img src='" . htmlspecialchars($post['image']) . "' style='max-width: 200px;'><br>";
-                echo "<p>"  . htmlspecialchars(formatBytes($size_bytes)) . "</p>";
+                echo "<p><st>"  . htmlspecialchars(formatBytes($size_bytes)) . " " . $extension . "</st></p>";
             }
             
             $postId = $post['id']; // Assuming $post['id'] is available
@@ -430,9 +433,19 @@ body {
   /* Ensures the gradient covers the entire page */
   height: 100vh; 
   margin: 0;
-  background-attachment: fixed; /* Prevents the gradient from repeating if content is short */
+  background-attachment: fixed;
+  font-family: Arial, sans-serif;/* Prevents the gradient from repeating if content is short */
 }
        
+         gt {
+ color:green;
+         
+}
+        st {
+font-size: 0.8em; /* Makes the text size 80% of its parent element's font size */
+    color: grey;
+         
+}
 .container {
     background-color: var(--bg-color);
     color: var(--text-color);
