@@ -11,9 +11,9 @@ Boards are created fast and instantly, any folder in the <i><b>"boards/"</b></i>
 
 Custom captcha system means no Cloudflare or Google reCaptcha systems are needed.
 
-<img src="https://i.imgur.com/B0xdYiF.png" width="300">
+<img src="https://i.imgur.com/VpenrTz.png" width="430">
 
-Page layout style is highly customizable, and a complex "tagging" system allows for directly replying to # number IDs from previous posts. Image file sizes are displayable
+Page layout style is highly customizable, and a complex "tagging" system allows for directly replying to # number IDs from previous posts. Image file sizes/formats are automatically displayable.
 
 <img src="https://i.imgur.com/ZhRF1Td.png" width="300">
 
