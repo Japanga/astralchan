@@ -1,7 +1,7 @@
 <img src="https://i.imgur.com/QA71TAY.png" width="300">
 
 
-AstralChan is a lightweight PHP imageboard application hosted on XAMPP and Apache. AstralChan aims to be much simpler to set-up and use right out of the box compared to most other open-source imageboard projects. Unlike those, AstralChan does not use SQL but does require the [XAMPP Control Panel](https://www.apachefriends.org/download.html) which is easily configurable to use SQL.
+AstralChan is a lightweight PHP imageboard application originally developed/hosted on XAMPP and Apache. AstralChan aims to be much simpler to set-up and use right out of the box compared to most other open-source imageboard projects. Unlike those, AstralChan does not use SQL but does require the [XAMPP Control Panel](https://www.apachefriends.org/download.html) which is easily configurable to use SQL. Thanks to AeonFree hosting, a live instance of the .PHP files is visitable at any time at [https://astralchan.hstn.me/index.php](https://astralchan.hstn.me/index.php) !
 
 <img src="https://i.imgur.com/6cRz8kJ.png" width="300">
 
