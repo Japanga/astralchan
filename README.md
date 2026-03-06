@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/FTwGvlM.png" width="300">
+<img src="https://i.imgur.com/bfo8oqL.png" width="300">
 
 
 AstralChan is a lightweight PHP imageboard application. AstralChan was originally developed on XAMPP Control Panel and Apache, but I found several other methods of being able to deploy the site project files. Thanks to AeonFree hosting, a live instance of the .PHP files is visitable at any time at [https://astralchan.hstn.me/index.php](https://astralchan.hstn.me/index.php) !
@@ -43,9 +43,11 @@ php -S localhost:8000
 
 <img src="https://i.imgur.com/5K5PmSv.png" width="300">
 
-At the inside of each board folder directory is an <i><b>"/admin.php"</b></i> folder, where users enter in a private password stored only in the server-end version of the file where you define the <b>your_admin_password</b> hash (meaning regular users are completely unable to access it through methods like View page source.)
+At the inside of each board folder directory is an <i><b>"/admin.php"</b></i> file, where users enter in a private password stored only in the server-end version of the file where you define the <b>your_admin_password</b> hash (meaning regular users are completely unable to access it through methods like View page source.)
 <img src="https://i.imgur.com/iuGrHZ2.png" width="460">
 
-<img src="https://i.imgur.com/kUG4Bv0.png" width="460">
+<img src="https://i.imgur.com/AEuw69y.png" width="460">
 
-Once you are inside, you can successfully use the "Delete" option next to all posts to remove it along with any individual replies. Posts can easily be backed-up by storing copies of your database folder.
+Once you are inside, you can successfully use the "Delete" option next to all posts to either remove the post directly or use a public ban message.
+
+<img src="https://i.imgur.com/ykW1uWG.png" width="460">
