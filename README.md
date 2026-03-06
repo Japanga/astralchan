@@ -1,7 +1,7 @@
 <img src="https://i.imgur.com/QA71TAY.png" width="300">
 
 
-AstralChan is a lightweight PHP imageboard application originally developed/hosted on XAMPP and Apache. AstralChan aims to be much simpler to set-up and use right out of the box compared to most other open-source imageboard projects. Unlike those, AstralChan does not use SQL but does require the [XAMPP Control Panel](https://www.apachefriends.org/download.html) which is easily configurable to use SQL. Thanks to AeonFree hosting, a live instance of the .PHP files is visitable at any time at [https://astralchan.hstn.me/index.php](https://astralchan.hstn.me/index.php) !
+AstralChan is a lightweight PHP imageboard application. AstralChan was originally developed on XAMPP and Apache, but I found several other methods of being able to deploy the site's .PHP files. Thanks to AeonFree hosting, a live instance of the .PHP files is visitable at any time at [https://astralchan.hstn.me/index.php](https://astralchan.hstn.me/index.php) !
 
 <img src="https://i.imgur.com/6cRz8kJ.png" width="300">
 
@@ -19,7 +19,7 @@ Page layout style is highly customizable, and a complex "tagging" system allows 
 
 Catalog style view displays all images uploaded to that board's <i><b>"upload/"</b></i>, folder.
 
-## How to INSTALL AstralChan
+## How to deploy AstralChan method 1: XAMPP Control Panel
 <img src="https://i.imgur.com/YmOiBsG.png" width="300">
 
 1. Download the [XAMPP Control Panel](https://www.apachefriends.org/download.html) (developed on 3.3.0)
@@ -27,6 +27,18 @@ Catalog style view displays all images uploaded to that board's <i><b>"upload/"<
 3. Open the XAMPP Control Panel in your Apache server
 4. Visit the imageboard by going to <i><b>localhost/index.php</b></i>!
 
+## How to deploy AstralChan method 2: PHP command prompt
+<img src="https://i.imgur.com/YmOiBsG.png" width="300">
+
+1. Use cd to get to the directory of your AstralChan install.
+2. Temporarily change the system %PATH% directory to the location of your PHP install in command prompt.
+```
+set  PATH=%PATH%;C:\path\to\php
+```
+3. Deploy the AstralChan server to localhost with the following command!
+```
+php -S localhost:8000
+```
 ## Moderation/Admin Tools: Deleting Posts
 
 <img src="https://i.imgur.com/5K5PmSv.png" width="300">
