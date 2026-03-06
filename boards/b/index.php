@@ -29,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_post'])) {
     $post_id = count($posts) > 0 ? max(array_keys($posts)) + 1 : 1;
     $parent_id = isset($_POST['parent_id']) && is_numeric($_POST['parent_id']) ? (int)$_POST['parent_id'] : 0;
     $content = htmlspecialchars($_POST['content']);
+     $content2 = htmlspecialchars($_POST['content2']);
+     $content3 = htmlspecialchars($_POST['content3']);
     $image_path = null;
 
     // Handle image upload
@@ -45,6 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_post'])) {
         'id' => $post_id,
         'parent_id' => $parent_id,
         'content' => $content,
+        'content2' => $content2,
+        'content3' => $content3,
         'image' => $image_path,
         'timestamp' => date('Y-m-d H:i:s')
     ];
@@ -69,7 +73,7 @@ function display_posts_recursive($posts, $parent_id = 0, $level = 0) {
     foreach ($posts as $post) {
         if ($post['parent_id'] == $parent_id) {
             echo "<div style='margin-left: " . ($level * 20) . "px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;'>";
-            echo "<p><b><gt>Anonymous</gt></b> <strong>No: " . $post['id'] . "</strong> <small>(" . $post['timestamp'] . ")</small></p>";
+            echo "<p><b><gt>" . nl2br($post['content2']) . "</gt></b> <tc><b>". nl2br($post['content3']) ."</tc></b> <strong>No: " . $post['id'] . "</strong> <small>(" . $post['timestamp'] . ")</small></p>";
             echo "<p>" . nl2br($post['content']) . "</p>";
             if ($post['image']) {
                 $size_bytes = filesize($post['image']); //
@@ -161,12 +165,44 @@ if ($images) {
     </ul>
 </div>
 
+  <style>
+  .container2 { max-width: 400px; margin: auto;   margin-left: -20px; padding: 20px; }
+        #tripcode { font-weight: bold; color: blue; }
+    </style>
+    
+    
+     <script>
+        // Simple client-side SHA256 simulation for demonstration
+        // In production, use crypto.subtle.digest for better security
+        async function generateTripcode() {
+            const password = document.getElementById('password').value;
+            if (!password) {
+                document.getElementById('tripcode').value = '';
+                return;
+            }
 
+            // Using SubtleCrypto API for SHA-256
+            const msgBuffer = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            // Convert to base64, slice to get a 10-char string
+            const hashBase64 = btoa(String.fromCharCode(...hashArray));
+            
+            // Generate a 10 character tripcode
+            const tripcode = '!' + hashBase64.substring(0, 8);
+            document.getElementById('tripcode').value = tripcode;
+        }
+    </script>
     <h1>Posts</h1>
 
     <!-- Post/Reply Form -->
     <h2 id="reply_form_0">New Post / Reply</h2>
     <form method="POST" enctype="multipart/form-data" action="index.php">
+   <div class="container2">
+        <input type="password" id="password" placeholder="Enter password" oninput="generateTripcode()">
+        <input type="text" name="content3" id="tripcode" placeholder="Generated Tripcode" readonly>
+        </div>
+     <textarea name="content2" id="textarea2" cols="30" required>Anonymous</textarea><br>
         <textarea name="content" id="textarea" rows="4" cols="50" required>#</textarea><br>
         <label for="image">Upload Image:</label>
         <input type="file" name="image" id="image"><br>
@@ -440,6 +476,10 @@ body {
          gt {
  color:green;
          
+}
+   tc {
+ color:green;
+ text-decoration: underline;
 }
         st {
 font-size: 0.8em; /* Makes the text size 80% of its parent element's font size */
