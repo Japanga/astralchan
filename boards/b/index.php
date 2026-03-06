@@ -55,19 +55,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_post'])) {
     exit;
 }
 
+  function formatBytes($bytes, $precision = 2) {
+            $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            $bytes = max($bytes, 0);
+            $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+            $pow = min($pow, count($units) - 1);
+            $bytes /= (1 << ($pow * 10));
+            return round($bytes, $precision) . ' ' . $units[$pow];
+        }
+
 // Function to display posts and replies recursively
 function display_posts_recursive($posts, $parent_id = 0, $level = 0) {
     foreach ($posts as $post) {
         if ($post['parent_id'] == $parent_id) {
             echo "<div style='margin-left: " . ($level * 20) . "px; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;'>";
-            echo "<p><strong>Post ID: " . $post['id'] . "</strong> <small>(" . $post['timestamp'] . ")</small></p>";
+            echo "<p><b>Anonymous</b> <strong>No: " . $post['id'] . "</strong> <small>(" . $post['timestamp'] . ")</small></p>";
             echo "<p>" . nl2br($post['content']) . "</p>";
             if ($post['image']) {
+                $size_bytes = filesize($post['image']); //
+               
                 echo "<img src='" . htmlspecialchars($post['image']) . "' style='max-width: 200px;'><br>";
+                echo "<p>"  . htmlspecialchars(formatBytes($size_bytes)) . "</p>";
             }
             
             $postId = $post['id']; // Assuming $post['id'] is available
-$hashValue = '#⠀' . $postId;
+$hashValue = '#â €' . $postId;
 $jsFunctionCall = "document.getElementById('textarea').value = " . json_encode($postId) . ";";
             // Reply form link (optional, can be a full form here)
             echo "<a href='#reply_form_".$post['id']."' onclick='document.getElementById(\"parent_id\").value=".$post['id']."; document.getElementById(\"textarea\").value=". htmlspecialchars($jsFunctionCall, ENT_QUOTES) .";'>Reply to this</a>";
@@ -316,7 +328,13 @@ window.addEventListener('click', (event) => {
     }
     .hidden { display: none; }
     #progression { margin-bottom: 15px; font-weight: bold; color: #555; }
-
+.footer-text {
+    font-size: 0.65rem;
+    color: #6b7280; /* Gray text color */
+    text-align: center;
+    padding: 1rem;
+    display: block;
+  }
   </style>
     <hr>
 
@@ -368,6 +386,10 @@ function applyChanges() {
     <h2>Latest Activity</h2>
     <?php display_posts_recursive($posts); ?>
  </div>
+   <hr>
+    <footer>
+  <span class="footer-text">Â© 2026 AstralChan imageboard software by <a href="https://github.com/Japanga/astralchan">Japanga</a> developed in .PHP and hosted by <a href="https://aeonfree.com/">AeonFree</a></span>
+</footer>
  
  <script>
   // Function to check and modify the input value
