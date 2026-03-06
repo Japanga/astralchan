@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/bfo8oqL.png" width="300">
+<img src="https://i.imgur.com/hdpxr2W.png" width="300">
 
 
 AstralChan is a lightweight PHP imageboard application. AstralChan was originally developed on XAMPP Control Panel and Apache, but I found several other methods of being able to deploy the site project files. Thanks to AeonFree hosting, a live instance of the .PHP files is visitable at any time at [https://astralchan.hstn.me/index.php](https://astralchan.hstn.me/index.php) !
