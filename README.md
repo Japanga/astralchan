@@ -7,7 +7,7 @@ AstralChan is a lightweight PHP imageboard application. AstralChan was originall
 
 Boards are created fast and instantly, any folder in the <i><b>"boards/"</b></i> directory is turned into clickable links across all of the other boards and the front home page. Title data is retrieved from a titles.txt in each board.
 
-<img src="https://i.imgur.com/w74Ln7D.png" width="300">
+<img src="https://i.imgur.com/zsklVNK.png" width="300">
 
 Custom captcha system means no Cloudflare or Google reCaptcha systems are needed.
 
