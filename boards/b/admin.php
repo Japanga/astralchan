@@ -111,14 +111,56 @@ if (isset($_GET['delete_id'])) {
         echo "<b>Post not found!</b>";
     }
 }
-?>
 
+$jsonFile = 'posts.json';
+$message = '';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_id'])) {
+    $postIdToBan = $_POST['post_id'];
+    $banMessage = "<bm>(USER WAS BANNED FOR THIS POST)</bm>";
+
+    if (file_exists($jsonFile)) {
+        // Read JSON and decode to array
+        $currentData = file_get_contents($jsonFile);
+        $posts = json_decode($currentData, true);
+
+        $found = false;
+        foreach ($posts as &$post) {
+            if ($post['id'] == $postIdToBan) {
+                // Add ban message if not already banned
+                if (strpos($post['content'], $banMessage) === false) {
+                    $post['content'] .= $banMessage;
+                }
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found) {
+            // Encode back to JSON and save
+            file_put_contents($jsonFile, json_encode($posts, JSON_PRETTY_PRINT));
+            $message = "Post ID $postIdToBan has been banned.";
+        } else {
+            $message = "Post ID $postIdToBan not found.";
+        }
+    } else {
+        $message = "Error: JSON file not found.";
+    }
+}
+?>
+   <?php if ($message) echo "<p>$message</p>"; ?>
  <div class = "mainarea2">
  <span style="color: black;">
 <h1>Admin Panel</h1>
  </span>
 <p><a href="index.php">View site</a> | <a href="admin.php?logout=true">Logout</a></p>
 <p>Use the delete links on the main site (visible to admin when logged in) to manage posts.</p>
+     <h1>Public Ban:</h1>
+     <p>Use this tool to apply a public ban to a post, a public ban appears as  <span style="color: red;"><b>(USER WAS BANNED FOR THIS POST)</b></span></p>
+     <form method="POST">
+        Post ID: <input type="text" name="post_id" required>
+        <input type="submit" value="Ban Post">
+    </form>
      </div>
     <style>
      b {
