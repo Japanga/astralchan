@@ -117,6 +117,10 @@ if ($images) {
         }
         ?>
     </div>
+    <hr>
+      <footer>
+  <span class="footer-text">© 2026 AstralChan imageboard software by <a href="https://github.com/Japanga/astralchan">Japanga</a> developed in .PHP and hosted by <a href="https://aeonfree.com/">AeonFree</a></span>
+</footer>
  <style>
    .header-bg {
             /* Use the PHP variable to set the background image URL */
@@ -127,6 +131,13 @@ if ($images) {
             width: 440px;
              border: 1px solid black;
         }
+          .footer-text {
+    font-size: 0.65rem;
+    color: #6b7280; /* Gray text color */
+    text-align: center;
+    padding: 1rem;
+    display: block;
+  }
  </style>
 </body>
 </html>
