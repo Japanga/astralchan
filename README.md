@@ -39,6 +39,11 @@ set  PATH=%PATH%;C:\path\to\php
 ```
 php -S localhost:8000
 ```
+
+## How to deploy AstralChan method 3: Deploy automatically in PyPHPDeploy
+<img src="https://i.imgur.com/WLg3WaR.png" width="300">
+While working in PHP and with AstralChan, I created a much simpler formula for deploying PHP apps that simplifies method 2 into a visual form that uses all of the same commands without having to manually enter them, and the user just has to get to their PHP and project directories from the file browser and set a custom localhost port. PyPHPDeploy can be found in my repository at https://github.com/Japanga/PyPHPDeploy/
+
 ## Moderation/Admin Tools: Deleting Posts
 
 <img src="https://i.imgur.com/5K5PmSv.png" width="300">
