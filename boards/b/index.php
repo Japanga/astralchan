@@ -477,6 +477,11 @@ body {
  color:green;
          
 }
+  bm {
+ color:red;
+         font-weight: bold;
+        font-style: italic;
+}
    tc {
  color:green;
  text-decoration: underline;
