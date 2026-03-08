@@ -1,197 +1,75 @@
 <?php
-// Configuration (must match index.php)
-$data_file = 'posts.json';
-$upload_dir = 'uploads/';
-$admin_password_hash = password_hash('your_admin_password', PASSWORD_DEFAULT); // Use the same hash as in index.php
+// Configuration
+$password_key = "secret_password";
+$replies_dir = "replies/";
+$main_posts_file = "posts.json";
 
-// Function to load posts
-function load_posts($file) {
-    if (file_exists($file)) {
-        $data = file_get_contents($file);
-        return json_decode($data, true) ?: [];
-    }
-    return [];
-}
-
-// Function to save posts
-function save_posts($file, $posts) {
-    file_put_contents($file, json_encode($posts, JSON_PRETTY_PRINT));
-}
-
+// Password protection
 session_start();
-
-// Handle login
-if (isset($_POST['admin_login'])) {
-    if (password_verify($_POST['password'], $admin_password_hash)) {
-        $_SESSION['admin_logged_in'] = true;
-    } else {
-        echo "<p style='color: red;'>Incorrect password.</p>";
-    }
+if (isset($_POST['password']) && $_POST['password'] === $password_key) {
+    $_SESSION['authenticated'] = true;
 }
-
-// Handle logout
-if (isset($_GET['logout'])) {
-    session_destroy();
-    header('Location: admin.php');
+if (!isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+    echo ' <section class="content-section"><form method="post"><input type="password" name="password"><input type="submit" value="Login"></form></section>';
+     echo '  <link rel="stylesheet" type="text/css" href="adminpage.css">';
     exit;
 }
 
-
-
-// Check admin status
-if (!isset($_SESSION['admin_logged_in'])) {
-    // Show login form
-    ?>
-    <div class = "mainarea">
-    <span style="color: black;">
-    <h1>Admin Login</h1>
-    <form method="POST" action="admin.php">
-        Password: <input type="password" name="password">
-        <input type="submit" name="admin_login" value="Login">
-    </form>
-     </span>
-    </div>
-      <style>
-   body {
-    background-color: #2F4F4F; /* A dark steel color */
-    color: #fff; /* White text for contrast on the dark background */
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    /* This ensures the background covers the entire page and stays fixed on scroll */
-    background-attachment: fixed; 
-    min-height: 100vh;
-}
-        .mainarea {
-        /* Apply the white-grey gradient */
-    background-image: linear-gradient(to bottom, #FFFFFF, #D3D3D3); 
-    color: #333; /* Darker text for contrast on the light gradient */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow for a "hovering" effect */
-    /* Add some opacity to the gradient's container if you want the background to be slightly visible through it (optional) */
-    /* opacity: 0.95; */ 
-}
-      input {
-  background-color: black; /* Or use the hex code #000000 */
-  color: white; /* Change the text color for better visibility on a black background */
-}
-    </style>
-    <?php
-    exit;
+// Function to remove ID from JSON file
+function removeIdFromJson($filePath, $idToRemove) {
+    if (!file_exists($filePath)) return "File not found.";
+    $data = json_decode(file_get_contents($filePath), true);
+    if (!is_array($data)) return "Invalid JSON.";
+    
+    // Assuming JSON structure is a list of objects with an 'id' key
+    $newData = array_filter($data, function($item) use ($idToRemove) {
+        return $item['id'] != $idToRemove;
+    });
+    
+    file_put_contents($filePath, json_encode(array_values($newData), JSON_PRETTY_PRINT));
+    return "ID $idToRemove processed.";
 }
 
-// Admin is logged in, handle deletion
-if (isset($_GET['delete_id'])) {
-    $post_id_to_delete = (int)$_GET['delete_id'];
-    $posts = load_posts($data_file);
-
-    if (isset($posts[$post_id_to_delete])) {
-        // Optional: delete associated image file
-        if ($posts[$post_id_to_delete]['image'] && file_exists($posts[$post_id_to_delete]['image'])) {
-            unlink($posts[$post_id_to_delete]['image']);
-        }
-        unset($posts[$post_id_to_delete]);
-        
-        // Also delete all replies to this post
-        foreach ($posts as $id => $post) {
-            if ($post['parent_id'] == $post_id_to_delete) {
-                // This is a simple flat-file; a more complex system would handle nested replies better
-                // For simplicity here, just delete immediate children
-                if ($post['image'] && file_exists($post['image'])) {
-                    unlink($post['image']);
-                }
-                unset($posts[$id]);
-            }
-        }
-
-        save_posts($data_file, $posts);
-        echo "<b>Post $post_id_to_delete and its immediate replies deleted!</b>";
-    } else {
-        echo "<b>Post not found!</b>";
+// Handle Form Submissions
+$message = "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['remove_reply']) && !empty($_POST['filename']) && !empty($_POST['id'])) {
+        $file = $replies_dir . basename($_POST['filename']);
+        $message = removeIdFromJson($file, $_POST['id']);
     }
-}
-
-$jsonFile = 'posts.json';
-$message = '';
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_id'])) {
-    $postIdToBan = $_POST['post_id'];
-    $banMessage = "<bm>(USER WAS BANNED FOR THIS POST)</bm>";
-
-    if (file_exists($jsonFile)) {
-        // Read JSON and decode to array
-        $currentData = file_get_contents($jsonFile);
-        $posts = json_decode($currentData, true);
-
-        $found = false;
-        foreach ($posts as &$post) {
-            if ($post['id'] == $postIdToBan) {
-                // Add ban message if not already banned
-                if (strpos($post['content'], $banMessage) === false) {
-                    $post['content'] .= $banMessage;
-                }
-                $found = true;
-                break;
-            }
-        }
-
-        if ($found) {
-            // Encode back to JSON and save
-            file_put_contents($jsonFile, json_encode($posts, JSON_PRETTY_PRINT));
-            $message = "Post ID $postIdToBan has been banned.";
-        } else {
-            $message = "Post ID $postIdToBan not found.";
-        }
-    } else {
-        $message = "Error: JSON file not found.";
+    if (isset($_POST['remove_main']) && !empty($_POST['id'])) {
+        $message = removeIdFromJson($main_posts_file, $_POST['id']);
     }
 }
 ?>
-   <?php if ($message) echo "<p>$message</p>"; ?>
- <div class = "mainarea2">
- <span style="color: black;">
-<h1>Admin Panel</h1>
- </span>
-<p><a href="index.php">View site</a> | <a href="admin.php?logout=true">Logout</a></p>
-<p>Use the delete links on the main site (visible to admin when logged in) to manage posts.</p>
-     <h1>Public Ban:</h1>
-     <p>Use this tool to apply a public ban to a post, a public ban appears as  <span style="color: red;"><b>(USER WAS BANNED FOR THIS POST)</b></span></p>
-     <form method="POST">
-        Post ID: <input type="text" name="post_id" required>
-        <input type="submit" value="Ban Post">
+
+<!DOCTYPE html>
+<html>
+<body>
+<section class="content-section">
+    <h2>Admin Panel</h2>
+    <p><?php echo $message; ?></p>
+    
+    <h3>Remove from Reply File</h3>
+     <p>(For each thread, replies are stored in that thread's .json file in the replies folder I.E. 1772938579389. To delete the thread itself, use the second input form value below instead. To delete replies, list the ID .json of the main thread first and then the IDs of whichever replies you wish to remove</p>
+    <form method="post">
+        Filename: <input type="text" name="filename" placeholder="123.json">
+        ID: <input type="text" name="id">
+        <input type="submit" name="remove_reply" value="Remove Reply">
     </form>
-     </div>
-    <style>
-     b {
-    color: red;
-    font-weight: bold;
-          font-style: italic; 
-    font-size: 1em; /* Makes text "big" */
-}
-    body {
-    background-color: #2F4F4F; /* A dark steel color */
-    color: #fff; /* White text for contrast on the dark background */
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    /* This ensures the background covers the entire page and stays fixed on scroll */
-    background-attachment: fixed; 
-    min-height: 100vh;
-}
-        .mainarea2 {
-        /* Apply the white-grey gradient */
-    background-image: linear-gradient(to bottom, #FFFFFF, #D3D3D3); 
-    color: #333; /* Darker text for contrast on the light gradient */
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow for a "hovering" effect */
-    /* Add some opacity to the gradient's container if you want the background to be slightly visible through it (optional) */
-    /* opacity: 0.95; */ 
-}
- 
-      input {
-  background-color: black; /* Or use the hex code #000000 */
-  color: white; /* Change the text color for better visibility on a black background */
-}
-    </style>
+    
+    <h3>Remove entire thread from Base Posts</h3>
+   
+    <form method="post">
+        ID: <input type="text" name="id">
+        <input type="submit" name="remove_main" value="Remove thread">
+    </form>
+    <a href="?logout=1">Logout</a>
+    
+    
+    </section>
+    
+    <link rel="stylesheet" type="text/css" href="adminpage.css">
+</body>
+</html>
+<?php if(isset($_GET['logout'])) { session_destroy(); header("Location: ".$_SERVER['PHP_SELF']); } ?>
