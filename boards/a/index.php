@@ -56,6 +56,9 @@ if ($images) {
     $randomImageUrl = ''; // Fallback or handle error if no images found
 }
 ?>
+
+
+
    <header class="header-bg">
         <!-- Your header content goes here -->
          <span style="color: white;"><h1>Welcome to AstralChan</h1></span>
@@ -336,8 +339,26 @@ window.addEventListener('click', (event) => {
   </script> <!-- Link your JavaScript file -->
   
 
+
     <h1>Recent Threads</h1>
     <?php
+    function getReplyCount($postId) {
+    // Sanitize ID to prevent path traversal
+    $safeId = preg_replace('/[^a-zA-Z0-9_\-]/', '', $postId);
+    $filePath = "replies/" . $safeId . ".json";
+
+    // Check if file exists
+    if (!file_exists($filePath)) {
+        return 0;
+    }
+
+    // Read and decode JSON
+    $jsonData = file_get_contents($filePath);
+    $replies = json_decode($jsonData, true); // true for associative array [1]
+
+    // Count items safely
+    return is_array($replies) ? count($replies) : 0;
+}
     $posts = getPosts();
     foreach ($posts as $post) {
         echo "<div class='post'>";
@@ -347,9 +368,31 @@ window.addEventListener('click', (event) => {
         echo "<a href='thread.php?id=" . htmlspecialchars($post['id']) . "'>";
         echo "<img src='" . htmlspecialchars($post['image_path']) . "' width='200'></a><br>";
         echo "<small>Uploaded: " . htmlspecialchars($post['timestamp']) . " | Size: " . formatBytes($post['file_size']) . "</small>";
-        echo "<p><a href='thread.php?id=" . htmlspecialchars($post['id']) . "'>View Thread/Replies</a></p>";
+        echo "<p><a href='thread.php?id=" . htmlspecialchars($post['id']) . "'>View thread, total replies: ", getReplyCount(htmlspecialchars($post['id'])); "</a></p>";
         echo "</div><hr>";
     }
+  function displayReplyCount($postId) {
+    // Sanitize input
+    $safeId = htmlspecialchars($post['id']);
+    $filePath = "replies/" . $safeId . ".json";
+
+    // Check if file exists
+    if (file_exists($filePath)) {
+        // Read file contents
+        $jsonContent = file_get_contents($filePath);
+        $data = json_decode($jsonContent, true); // {Link: decode as array https://codesignal.com/learn/courses/handling-json-files-with-php/lessons/parsing-and-accessing-json-data-with-php}
+
+        // Count items if data is an array
+        if (is_array($data)) {
+            $count = count($data);
+            echo "<p>Total replies: " . $count . "</p>";
+        } else {
+            echo "<p>Total replies: 0</p>";
+        }
+    } else {
+        echo "<p>No replies found.</p>";
+    }
+}
     ?>
     
     
