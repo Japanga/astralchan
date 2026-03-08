@@ -209,7 +209,7 @@ function applyChanges() {
     <?php
     $replies = getReplies($postId);
     foreach ($replies as $reply) {
-        echo "<div class='reply'>";
+        echo "<div class='reply' id='" . $reply['id'] . "'>";
         echo "<b><p><gt>" . htmlspecialchars($reply['username']) . "</gt></b> <tc>" . htmlspecialchars($reply['tripcode']) ."</tc> Post ID: #" . htmlspecialchars($reply['id']) . "</p></b>";
         echo $replies = findPostReplies($post['id'], $reply['id']);
         echo "<p>" . $replies . "</p>";
@@ -278,7 +278,7 @@ function setReplyId(id) {
     // Replace function: wraps the matched text in an <a> tag
     // $1 refers to the numbers, e.g., in #123, it's 123
     document.body.innerHTML = document.body.innerHTML.replace(regex, 
-        '<b><a href="" class="hash-link">#$1</a></b>');
+        '<b><a href="#$1" class="hash-link">#$1</a></b>');
 });
 
    </script>
