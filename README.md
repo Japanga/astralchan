@@ -48,8 +48,6 @@ While working in PHP and with AstralChan, I created a much simpler formula for d
 At the inside of each board folder directory is an <i><b>"/admin.php"</b></i> file, where users enter in a private password stored only in the server-end version of the file where you define the <b>your_admin_password</b> hash (meaning regular users are completely unable to access it through methods like View page source.)
 <img src="https://i.imgur.com/iuGrHZ2.png" width="460">
 
-<img src="https://i.imgur.com/AEuw69y.png" width="460">
-
 Once you are inside, you can succesfully either remove an entire thread based off it's post ID, or remove any individual replies within the thread database by specificing the thread's post ID .json name.
 
 <img src="https://i.imgur.com/DVq2mwj.png" width="460">
