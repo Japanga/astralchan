@@ -131,6 +131,10 @@ if ($images) {
         <small>Uploaded: <?php echo htmlspecialchars($post['timestamp']); ?> | Size: <?php echo formatBytes($post['file_size']); ?> </small>
     </div>
 
+
+
+
+
     <hr>
     <h2>Replies</h2>
 
@@ -197,7 +201,7 @@ function applyChanges() {
 }
 
   </script>
-    
+
 
     <hr>
     <!-- Display replies -->
@@ -205,18 +209,56 @@ function applyChanges() {
     <?php
     $replies = getReplies($postId);
     foreach ($replies as $reply) {
-        echo "<div class='reply'>";
+        echo "<div class='reply' id='" . $reply['id'] . "'>";
         echo "<b><p><gt>" . htmlspecialchars($reply['username']) . "</gt></b> <tc>" . htmlspecialchars($reply['tripcode']) ."</tc> Post ID: #" . htmlspecialchars($reply['id']) . "</p></b>";
-        echo "<p>" . htmlspecialchars($reply['text']) . "</p>";
-        if ($reply['image_path']) {
+        echo $replies = findPostReplies($post['id'], $reply['id']);
+        echo "<p>" . $replies . "</p>";
+        echo "<p>" . htmlspecialchars($reply['text']) . "</p>";        if ($reply['image_path']) {
             echo "<img src='" . htmlspecialchars($reply['image_path']) . "' width='200'><br>";
+         
         }
         $replyId = htmlspecialchars($reply['id'], ENT_QUOTES, 'UTF-8');
+        
 echo "<button onclick=\"setReplyId('$replyId')\">Reply to # </button>";
         echo "<small>Uploaded: " . htmlspecialchars($reply['timestamp']) . " | Size: " . formatBytes($reply['file_size']) . "</small>";
         echo "</div><hr>";
     }
-    ?>
+function findPostReplies($postId, $targetId) {
+    $filename = "replies/" . $postId . ".json";
+
+    if (file_exists($filename)) {
+        
+        $jsonContent = file_get_contents($filename);
+        $replies = json_decode($jsonContent, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($replies)) {
+            $found = false;
+
+            // Assuming JSON structure is an array of objects/arrays
+            foreach ($replies as $reply) {
+                // Check if targetId is in the text (case-insensitive check)
+                if (isset($reply['text']) && stripos($reply['text'], $targetId) !== false) {
+                    echo "<i><st>Replies: #{$reply['id']}\n</st></i>";
+                    $found = true;
+                }
+            }
+            
+            if (!$found) {
+                echo "";
+            }
+        } else {
+            echo "Error: Failed to parse JSON or invalid format.\n";
+        }
+    } else {
+        echo "Error: File not found for post $postId.\n";
+    }
+}
+
+// Example usage:
+// Create a folder named 'replies' and a file named '123.json' with sample data
+// findPostReplies('123', 'postA');
+?>
+
     </div>
     
      <script>
@@ -224,6 +266,9 @@ function setReplyId(id) {
     document.getElementById('reply_text').value = "#" + id;
 }
   </script>
+  
+  
+
   
   <script>
      document.addEventListener("DOMContentLoaded", function() {
@@ -233,7 +278,7 @@ function setReplyId(id) {
     // Replace function: wraps the matched text in an <a> tag
     // $1 refers to the numbers, e.g., in #123, it's 123
     document.body.innerHTML = document.body.innerHTML.replace(regex, 
-        '<b><a href="" class="hash-link">#$1</a></b>');
+        '<b><a href="#$1" class="hash-link">#$1</a></b>');
 });
 
    </script>
