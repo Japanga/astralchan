@@ -368,7 +368,8 @@ window.addEventListener('click', (event) => {
         echo "<a href='thread.php?id=" . htmlspecialchars($post['id']) . "'>";
         echo "<img src='" . htmlspecialchars($post['image_path']) . "' width='200'></a><br>";
         echo "<small>Uploaded: " . htmlspecialchars($post['timestamp']) . " | Size: " . formatBytes($post['file_size']) . "</small>";
-        echo "<p><a href='thread.php?id=" . htmlspecialchars($post['id']) . "'>View thread, total replies: ", getReplyCount(htmlspecialchars($post['id'])); "</a></p>";
+        echo "<p><a href='thread.php?id=" . htmlspecialchars($post['id']) . "'>View thread, total replies:", getReplyCount(htmlspecialchars($post['id']));
+        echo "</a></p>";
         echo "</div><hr>";
     }
   function displayReplyCount($postId) {
