@@ -268,7 +268,7 @@ function setReplyId(id) {
   </script>
   
   
-
+<script src="greentextandyoutube.js"></script>
   
   <script>
      document.addEventListener("DOMContentLoaded", function() {
