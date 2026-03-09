@@ -43,6 +43,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+<?php
+$message2 = "";
+$repliesDir = 'replies/';
+
+// Process form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $filename2 = $_POST['filename2'] ?? '';
+    $targetId = $_POST['targetId'] ?? '';
+    $filePath = $repliesDir . $filename2 . '.json';
+
+    if (!empty($filename2) && file_exists($filePath)) {
+        $message = "<p style='color:green;'>File '$filename.json' found successfully!</p>";
+
+        if (!empty($targetId)) {
+            // Read, modify, and save JSON
+            $jsonData = json_decode(file_get_contents($filePath), true);
+            $found = false;
+
+            if (is_array($jsonData)) {
+                foreach ($jsonData as &$item) {
+                    if (isset($item['id']) && $item['id'] == $targetId) {
+                        // Append red, bolded text
+                        echo $item['text'] .= " <bm>(USER WAS BANNED FOR THIS POST.)</bm>";
+                        $found = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($found) {
+                file_put_contents($filePath, json_encode($jsonData, JSON_PRETTY_PRINT));
+                $message2 .= "<p style='color:red;'>ID $targetId banned.</p>";
+            } else {
+                $message2 .= "<p style='color:orange;'>ID $targetId not found in file.</p>";
+            }
+        }
+    } elseif (!empty($filename)) {
+        $message2 = "<p style='color:red;'>File '$filename.json' not found.</p>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <body>
@@ -64,7 +106,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ID: <input type="text" name="id">
         <input type="submit" name="remove_main" value="Remove thread">
     </form>
-    <a href="?logout=1">Logout</a>
+
+    <h2>Public ban a post ID</h2>
+    
+    <?php echo $message2; ?>
+    
+      <form method="post" action="">
+        <label>JSON File Name (without .json):</label><br>
+        <input type="text" name="filename2" required><br><br>
+        <label>ID to Ban:</label><br>
+        <input type="text" name="targetId" required><br><br>
+        <input type="submit" value="Process Request">
+    </form>
+    
+        <a href="?logout=1">Logout</a>
     
     
     </section>
