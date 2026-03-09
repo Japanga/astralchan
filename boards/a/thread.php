@@ -213,7 +213,7 @@ function applyChanges() {
         echo "<b><p><gt>" . htmlspecialchars($reply['username']) . "</gt></b> <tc>" . htmlspecialchars($reply['tripcode']) ."</tc> Post ID: #" . htmlspecialchars($reply['id']) . "</p></b>";
         echo $replies = findPostReplies($post['id'], $reply['id']);
         echo "<p>" . $replies . "</p>";
-        echo "<p>" . htmlspecialchars($reply['text']) . "</p>";        if ($reply['image_path']) {
+        echo "<p>" . $reply['text'] . "</p>";        if ($reply['image_path']) {
             echo "<img src='" . htmlspecialchars($reply['image_path']) . "' width='200'><br>";
          
         }
@@ -298,6 +298,11 @@ body {
          gt {
  color:green;
          
+}
+    bm {
+ color:red;
+  font-weight: bold;
+  font-style: italic;
 }
    tc {
  color:green;
