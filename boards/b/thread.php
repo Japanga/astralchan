@@ -279,6 +279,8 @@ function setReplyId(id) {
 <script src="greentextandyoutube.js"></script>
     
 <script src="tagging.js"></script>
+    
+<script src="spoilers.js"></script>
 
     
        <style>
@@ -370,6 +372,19 @@ font-size: 0.8em; /* Makes the text size 80% of its parent element's font size *
     color: grey;
          
 }
+            .spoiler {
+            background-color: black;
+            color: black;
+            cursor: pointer; /* Indicates the text is interactive */
+            transition: color 0.3s, background-color 0.3s;
+        }
+
+        /* Style for when the spoiler is hovered over or clicked (revealed) */
+        .spoiler:hover, .spoiler.revealed {
+            background-color: transparent; /* Makes background transparent */
+            color: initial; /* Reverts text color to default page color */
+        }
+
        </style>
 </body>
 </html>
