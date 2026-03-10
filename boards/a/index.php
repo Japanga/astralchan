@@ -183,6 +183,8 @@ if ($images) {
     
          <button id="openPopup">Get captcha</button>
  <button onclick="window.location.href='/index.php'">Return to home page</button>
+    
+     <button onclick="window.location.href='/boards/a/archive.php'">View thread archives</button>
 
  <button class="open-button" onclick="openForm()">Change Layout</button>
 
