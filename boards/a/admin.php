@@ -188,10 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         @$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
 
         // 1. Remove Scripts
-        $scripts = $dom->getElementsByTagName('script');
-        $remove = [];
-        foreach ($scripts as $script) $remove[] = $script;
-        foreach ($remove as $item) $item->parentNode->removeChild($item);
+   
 
         // 2. Add New CSS/Styling
         $head = $dom->getElementsByTagName('head')->item(0);
