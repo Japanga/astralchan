@@ -48,7 +48,7 @@ While working in PHP and with AstralChan, I created a much simpler formula for d
 At the inside of each board folder directory is an <i><b>"/admin.php"</b></i> file, where users enter in a private password stored only in the server-end version of the file where you define the <b>your_admin_password</b> hash (meaning regular users are completely unable to access it through methods like View page source.)
 <img src="https://i.imgur.com/iuGrHZ2.png" width="460">
 
-Once you are inside, you can succesfully enter the admin command console, and familiarze yourself with the impressive amount of tools and methods of removing posts.
+Once you are inside, you can succesfully enter the admin command console, and familiarize yourself with the impressive amount of tools and methods of removing posts.
 
 <img src="https://i.imgur.com/u6paCWE.png" width="460">
 
@@ -56,4 +56,4 @@ Posts are either straight up deleted from the .json files, or more public method
 
 <img src="https://i.imgur.com/C6pc9JE.png" width="460">
 
-The trash canning of posts connects in to the archiving functionalities of AstralChan. On real imageboards, posts are often deleted from the live thread but are still stored in the archive and displayed as removed, and a similar effect is achieved here. When a thread is archived, it is not instantly removed. And the replies can be deleted/removed before the thread is finished.
+The trash canning of posts connects in to the archiving functionalities of AstralChan. On real imageboards, posts are often deleted from the live thread but are still stored in the archive and displayed as removed, and a similar effect is achieved here. When a thread is archived, it is not instantly removed. And the replies can be deleted/removed before the thread is finished. But no new replies can be made to threads in the archive.
