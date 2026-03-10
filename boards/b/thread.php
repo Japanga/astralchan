@@ -45,6 +45,7 @@ function formatBytes($bytes, $precision = 2) {
 <html lang="en">
 <head>
     <title>Thread #<?php echo htmlspecialchars($postId); ?></title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -68,6 +69,7 @@ if ($images) {
     $randomImageUrl = ''; // Fallback or handle error if no images found
 }
 ?>
+    <div class = 'replyform'>
    <header class="header-bg">
         <!-- Your header content goes here -->
          <span style="color: white;"><h1>Welcome to AstralChan</h1></span>
@@ -118,6 +120,9 @@ if ($images) {
             document.getElementById('tripcode').value = tripcode;
         }
     </script>
+    
+    </div>
+    
     <a href="index.php">Back to main board</a>
     <h1>Thread #<?php echo htmlspecialchars($postId); ?></h1>
 
@@ -127,7 +132,9 @@ if ($images) {
          <h3>Title: <?php echo htmlspecialchars($post['title']); ?></h3>
         <p><?php echo htmlspecialchars($post['description']); ?></p>
         <img src='<?php echo htmlspecialchars($post['image_path']); ?>' width='400'><br>
+    <div class = 'replyform'>
                 <button onclick="setReplyId('<?php echo htmlspecialchars($post['id']); ?>')">Reply to # </button>
+        </div>
         <small>Uploaded: <?php echo htmlspecialchars($post['timestamp']); ?> | Size: <?php echo formatBytes($post['file_size']); ?> </small>
     </div>
 
@@ -139,6 +146,7 @@ if ($images) {
     <h2>Replies</h2>
 
     <!-- Form for adding a reply -->
+    <div class="replyform">
     <form action="thread.php?id=<?php echo htmlspecialchars($postId); ?>" method="POST" enctype="multipart/form-data">
             <div class="container2">
         <label for="description">Tripcode:</label><br>
@@ -156,7 +164,7 @@ if ($images) {
     
     
  <button class="open-button" onclick="openForm()">Change Layout</button>
-
+ </div>
    
    <!-- The Popup Form -->
     <div class="form-popup" id="myForm">
@@ -210,7 +218,7 @@ function applyChanges() {
     $replies = getReplies($postId);
     foreach ($replies as $reply) {
         echo "<div class='reply' id='" . $reply['id'] . "'>";
-        echo "<b><p><gt>" . htmlspecialchars($reply['username']) . "</gt></b> <tc>" . htmlspecialchars($reply['tripcode']) ."</tc> Post ID: #" . htmlspecialchars($reply['id']) . "</p></b>";
+        echo "<b><p><gt>" . $reply['username'] . "</gt></b> <tc>" . htmlspecialchars($reply['tripcode']) ."</tc> Post ID: #" . ($reply['id']) . "</p></b>";
         echo $replies = findPostReplies($post['id'], $reply['id']);
         echo "<p>" . $replies . "</p>";
         echo "<p>" . $reply['text'] . "</p>";        if ($reply['image_path']) {
@@ -219,7 +227,7 @@ function applyChanges() {
         }
         $replyId = htmlspecialchars($reply['id'], ENT_QUOTES, 'UTF-8');
         
-echo "<button onclick=\"setReplyId('$replyId')\">Reply to # </button>";
+echo " <hiddenr><button onclick=\"setReplyId('$replyId')\">Reply to # </button></hiddenr>";
         echo "<small>Uploaded: " . htmlspecialchars($reply['timestamp']) . " | Size: " . formatBytes($reply['file_size']) . "</small>";
         echo "</div><hr>";
     }
@@ -269,9 +277,9 @@ function setReplyId(id) {
   
   
 <script src="greentextandyoutube.js"></script>
-  
-  <script>
-     document.addEventListener("DOMContentLoaded", function() {
+    
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
     // Regex: Match # followed by one or more digits (\d+)
     const regex = /#(\d+)/g;
     
@@ -281,38 +289,12 @@ function setReplyId(id) {
         '<b><a href="#$1" class="hash-link">#$1</a></b>');
 });
 
-   </script>
+    </script>
+
     
-      <style>
-       
-body {
-  /* Fallback color */
-  background: #D5DEE7; 
-  /* Ensures the gradient covers the entire page */
-  height: 100vh; 
-  margin: 0;
-  background-attachment: fixed;
-  font-family: Arial, sans-serif;/* Prevents the gradient from repeating if content is short */
-}
-       
-         gt {
- color:green;
-         
-}
-    bm {
- color:red;
-  font-weight: bold;
-  font-style: italic;
-}
-   tc {
- color:green;
- text-decoration: underline;
-}
-        st {
-font-size: 0.8em; /* Makes the text size 80% of its parent element's font size */
-    color: grey;
-         
-}
+       <style>
+
+   
 .container {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -363,6 +345,42 @@ font-size: 0.8em; /* Makes the text size 80% of its parent element's font size *
             width: 440px;
              border: 1px solid black;
         }
- </style>
+   .header-bg {
+            /* Use the PHP variable to set the background image URL */
+            background-image: url('<?php echo $randomImageUrl; ?>');
+            background-size: cover; /* Optional: ensures the image covers the entire header area */
+            background-position: center; /* Optional: centers the image */
+            height: 160px; /* Optional: set a height for the header */
+            width: 440px;
+             border: 1px solid black;
+        }
+               
+         gt {
+ color:green;
+         
+}
+ bm {
+ color:red;
+  font-weight: bold; /* Makes the text bold (equivalent to 700) */
+  font-style: italic;
+}
+ .Mod {
+ color:purple;
+  font-weight: bold; /* Makes the text bold (equivalent to 700) */
+}
+.Developer {
+ color:blue;
+  font-weight: bold; /* Makes the text bold (equivalent to 700) */
+}
+   tc {
+ color:green;
+ text-decoration: underline;
+}
+        st {
+font-size: 0.8em; /* Makes the text size 80% of its parent element's font size */
+    color: grey;
+         
+}
+       </style>
 </body>
 </html>
