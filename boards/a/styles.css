@@ -1,0 +1,10 @@
+                  
+body {
+  /* Fallback color */
+  background: #D5DEE7; 
+  /* Ensures the gradient covers the entire page */
+  height: 100vh; 
+  margin: 0;
+  background-attachment: fixed;
+  font-family: Arial, sans-serif;/* Prevents the gradient from repeating if content is short */
+}
