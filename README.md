@@ -57,3 +57,7 @@ Posts are either straight up deleted from the .json files, or more public method
 <img src="https://i.imgur.com/C6pc9JE.png" width="460">
 
 The trash canning of posts connects in to the archiving functionalities of AstralChan. On real imageboards, posts are often deleted from the live thread but are still stored in the archive and displayed as removed, and a similar effect is achieved here. When a thread is archived, it is not instantly removed. And the replies can be deleted/removed before the thread is finished. But no new replies can be made to threads in the archive.
+
+## Shadowmasking: IP-level banning system
+<img src="https://i.imgur.com/JN4d2ss.png" width="460">
+"Shadowmasking" is an internal AstralChan code word for creating X hash strings from the user's IP address that can be stored in the server and used for hard banning users and rendering them unable to post to the service, beyond simply just deleting their posts.
