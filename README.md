@@ -58,6 +58,10 @@ Posts are either straight up deleted from the .json files, or more public method
 
 The trash canning of posts connects in to the archiving functionalities of AstralChan. On real imageboards, posts are often deleted from the live thread but are still stored in the archive and displayed as removed, and a similar effect is achieved here. When a thread is archived, it is not instantly removed. And the replies can be deleted/removed before the thread is finished. But no new replies can be made to threads in the archive.
 
+## Pruning/auto-archiving
+<img src="https://i.imgur.com/OP7CVZ0.png" width="460">
+All boards support auto-archiving, but /b/ is currently the only board on the live site that is configured to properly "prune" threads after 24 hours. Manual archiving was quickly proven obsolete when the automatic archiving function was developed. Auto archiving was added to all boards for the efficiency, but pruning has only been added to /b/ because of wanting to preserve higher traffic threads on the other boards. To create a true pruning function without offline functions proved to be truly challenging, but by automatically backing up threads from the thread.php and routinely clearing old posts from posts.json in the thread.php, a very efficiently functioning machine for automatically purging old posts was developed.
+
 ## Shadowmasking: IP-level banning system
 <img src="https://i.imgur.com/JN4d2ss.png" width="460">
 "Shadowmasking" is an internal AstralChan code word for creating X hash strings from the user's IP address that can be stored in the server and used for hard banning users and rendering them unable to post to the service, beyond simply just deleting their posts.
