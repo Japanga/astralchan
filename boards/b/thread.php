@@ -46,6 +46,9 @@ function formatBytes($bytes, $precision = 2) {
 <head> 
     <title>Thread #<?php echo htmlspecialchars($postId); ?></title>
     <link rel="stylesheet" href="styles.css">
+    
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
 </head>
 <body>
 <?php
@@ -228,13 +231,78 @@ if ($images) {
         <label for="reply_text">Reply:</label><br>
         <textarea name="reply_text" id="reply_text" rows="2" cols="50"></textarea><br>
         <label for="reply_image">Upload Image (optional):</label>
-        <input type="file" name="reply_image" id="reply_image" accept="image/*"><br>
-        <button type="submit" name="submit_reply">Reply</button>
+        <input type="file" name="reply_image" id="reply_image" accept="image/*"><br>       
+        <button type="submit" name="submit_reply" id="submitbutton" disabled>Reply</button>
     </form>
+
+ </div>
     
+        <script>
+  function enablePosts() {
+
+  const button = document.getElementById("submitbutton");
+
+  // Enable the button by setting the disabled property to false
+  button.disabled = false;
+  }
+   
+</script>
+       <?php
+    // 1. Get the user's IP address
+$ip = $_SERVER['REMOTE_ADDR'];
+
+// 2. Create a unique hash based on the IP (and optional salt for extra security)
+$hash = substr(hash('sha256', $ip . 'optional_salt'), 0, 16);
+
+// 3. Create a "shadowmask" (e.g., mask part of the IP)
+// This masks the last two octets of an IPv4 address
+$maskedIp = preg_replace('/(\d+)\.(\d+)\.(\d+)\.(\d+)/', '$1.$2.XXX.XXX', $ip);
+
+// 4. Combine mask and hash for the final ID
+$shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
+
+$banFile = 'banned.json';
+$message = "";
+$isBanned = false;
+
+// Handle button click
+if (isset($_POST['check_ban'])) {
+    if (file_exists($banFile)) {
+        $jsonContent = file_get_contents($banFile);
+        $bannedUsers = json_decode($jsonContent, true);
+
+        // Check if ID exists in JSON
+        if (isset($bannedUsers[$shadowMaskId])) {
+            $isBanned = true;
+            $data = $bannedUsers[$shadowMaskId];
+            $message = "<div style='color: white; background-color: red; padding: 10px; border-radius: 5px;'>
+                            <strong>USER BANNED</strong><br>
+                            Reason: {$data['reason']}<br>
+                            Date: {$data['date']}
+                        </div>";
+        } else {
+            $message = "<div style='color: white; background-color: green; padding: 10px; border-radius: 5px;'>
+                           You are not banned!
+                        </div>";
+            echo '<script>';
+// Pass PHP data to JavaScript using json_encode for safety
+echo 'enablePosts();';
+echo '</script>';
+        }
+    } else {
+        $message = "Error: Ban list not found.";
+    }
+}
+?>
+  <form method="post">
+        <button type="submit" name="check_ban" id="banbutton">Check Ban Status</button>
+    </form>
+
+    <br>
+    <?php echo $message; ?>
+        
     
  <button class="open-button" onclick="openForm()">Change Layout</button>
- </div>
    
    <!-- The Popup Form -->
     <div class="form-popup" id="myForm">
