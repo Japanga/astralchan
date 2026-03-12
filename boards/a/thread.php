@@ -43,11 +43,82 @@ function formatBytes($bytes, $precision = 2) {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
     <title>Thread #<?php echo htmlspecialchars($postId); ?></title>
     <link rel="stylesheet" href="styles.css">
+    
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
 </head>
 <body>
+<?php
+// --- Configuration ---
+$threadId = $_GET['id'] ?? 'unknown'; // Get static ID from URL
+$archiveBase = 'archives/';
+$targetFolder = $archiveBase . $threadId;
+
+// Files/Folders to backup
+$filesToBackup = ['thread_archive.php', 'posts.json', 'uploads', 'replies'];
+
+// --- Archiving Function ---
+function archiveThread($files, $dest) {
+    if (!file_exists($dest)) {
+        mkdir($dest, 0777, true);
+    }
+
+    foreach ($files as $file) {
+        if (file_exists($file)) {
+            if (is_dir($file)) {
+                // Recursive copy for directories
+                $dirDest = $dest . '/' . $file;
+                mkdir($dirDest, 0777, true);
+                
+                $iterator = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($file, RecursiveDirectoryIterator::SKIP_DOTS),
+                    RecursiveIteratorIterator::SELF_FIRST
+                );
+                foreach ($iterator as $item) {
+                    if ($item->isDir()) {
+                        mkdir($dirDest . '/' . $iterator->getSubPathName(), 0777, true);
+                    } else {
+                        copy($item, $dirDest . '/' . $iterator->getSubPathName());
+                    }
+                }
+            } else {
+                // Copy files
+                copy($file, $dest . '/' . basename($file));
+            }
+        }
+    }
+    
+    function getUrlIdToString($key = 'id') {
+    // 1. Check if the parameter exists in the URL (e.g., ?id=123)
+    if (isset($_GET[$key])) {
+        // 2. Sanitize to ensure it's an integer
+        $id = intval($_GET[$key]);
+        // 3. Convert to string and return
+        return (string)$id;
+    }
+    return null; // Return null if ID is not in URL
+}
+
+    $idString = getUrlIdToString('id');
+    $timestamp = date('Y-m-d H-i-s');
+        $url = $dest . '/' . 'thread_archive.php?id=' . $idString;
+$link_text = "Visit archived thread";
+    return "<st>Archived automatically at $timestamp to: $dest <a href='$url'>$link_text</a></st>";
+}
+
+// --- Execute ---
+if ($threadId !== 'unknown') {
+    echo archiveThread($filesToBackup, $targetFolder);
+} else {
+    echo "No thread ID provided.";
+}
+?>
+
+
+
 
 
 <?php
@@ -131,6 +202,8 @@ if ($images) {
         <h3><gt> <?php echo htmlspecialchars($post['username']); ?> </gt></b> <tc> <?php echo htmlspecialchars($post['tripcode']); ?> </tc> Post ID: <?php echo htmlspecialchars($post['id']); ?></h3>
          <h3>Title: <?php echo htmlspecialchars($post['title']); ?></h3>
         <p><?php echo htmlspecialchars($post['description']); ?></p>
+           <?php echo $replies = findPostReplies($post['id'], $post['id']);?>
+         <?php echo "<p>" . $replies . "</p>";?>
         <img src='<?php echo htmlspecialchars($post['image_path']); ?>' width='400'><br>
     <div class = 'replyform'>
                 <button onclick="setReplyId('<?php echo htmlspecialchars($post['id']); ?>')">Reply to # </button>
@@ -158,13 +231,80 @@ if ($images) {
         <label for="reply_text">Reply:</label><br>
         <textarea name="reply_text" id="reply_text" rows="2" cols="50"></textarea><br>
         <label for="reply_image">Upload Image (optional):</label>
-        <input type="file" name="reply_image" id="reply_image" accept="image/*"><br>
-        <button type="submit" name="submit_reply">Reply</button>
+        <input type="file" name="reply_image" id="reply_image" accept="image/*"><br>       
+        <button type="submit" name="submit_reply" id="submitbutton" disabled>Reply</button>
     </form>
+
+ </div>
     
+        <script>
+  function enablePosts() {
+
+  const button = document.getElementById("submitbutton");
+
+  // Enable the button by setting the disabled property to false
+  button.disabled = false;
+  }
+   
+</script>
+               <?php
+    // 1. Get the user's IP address
+$ip = $_SERVER['REMOTE_ADDR'];
+
+// 2. Create a unique hash based on the IP (and optional salt for extra security)
+$hash = substr(hash('sha256', $ip . 'optional_salt'), 0, 16);
+
+// 3. Create a "shadowmask" (e.g., mask part of the IP)
+// This masks the last two octets of an IPv4 address
+$maskedIp = preg_replace('/(\d+)\.(\d+)\.(\d+)\.(\d+)/', '$1.$2.XXX.XXX', $ip);
+
+// 4. Combine mask and hash for the final ID
+$shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
+
+$banFile = 'banned.json';
+$message = "";
+$isBanned = false;
+
+// Handle button click
+if (isset($_POST['check_ban'])) {
+    if (file_exists($banFile)) {
+        $jsonContent = file_get_contents($banFile);
+        $bannedUsers = json_decode($jsonContent, true);
+
+        // Check if ID exists in JSON
+        if (isset($bannedUsers[$shadowMaskId])) {
+            $isBanned = true;
+            $data = $bannedUsers[$shadowMaskId];
+            $message = "<div style='color: white; background-color: red; padding: 10px; border-radius: 5px;'>
+                            <strong>USER BANNED</strong><br>
+                            Reason: {$data['reason']}<br>
+                            Date: {$data['date']}
+                        </div>";
+        } else {
+            $message = "<div style='color: white; background-color: green; padding: 10px; border-radius: 5px;'>
+                           You are not banned!
+                        </div>";
+            echo '<script>';
+// Pass PHP data to JavaScript using json_encode for safety
+echo 'enablePosts();';
+echo '</script>';
+        }
+    } else {
+        $message = "Error: Ban list not found.";
+    }
+}
+?>
+  <form method="post">
+        <button type="submit" name="check_ban" id="banbutton">Check Ban Status</button>
+    </form>
+
+    <br>
+    <?php echo $message; ?>
+        
+   
+        
     
  <button class="open-button" onclick="openForm()">Change Layout</button>
- </div>
    
    <!-- The Popup Form -->
     <div class="form-popup" id="myForm">
@@ -210,7 +350,6 @@ function applyChanges() {
 
   </script>
 
-
     <hr>
     <!-- Display replies -->
     <div class="replies-section">
@@ -218,7 +357,40 @@ function applyChanges() {
     $replies = getReplies($postId);
     foreach ($replies as $reply) {
         echo "<div class='reply' id='" . $reply['id'] . "'>";
+    echo '<div class="reply-header">';
+     echo '<div class="dropdown">';
+echo '  <button onclick="toggleDropdown(' . ($reply['id']) . ')" class="dropbtn">...</button>';
+echo '  <div id="dropdownContent' . ($reply['id']) . '" class="dropdown-content">';
+ echo '  <button onclick="document.getElementById(\'' . $reply['id'] . '\').style.display = \'none\';">Hide this post</button>';
+echo '  </div>';
+        echo '  </div>';
+        
+echo '<script>
+    function toggleDropdown(id) {
+        document.getElementById("dropdownContent" + id).classList.toggle("show");
+    }
+    function action(type, id) {
+        alert(type + " clicked for ID: " + id);
+        // Close menu after action
+        document.getElementById("dropdownContent" + id).classList.remove("show");
+    }
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches(".dropbtn")) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains("show")) {
+                    openDropdown.classList.remove("show");
+                }
+            }
+        }
+    }
+</script>';
+         echo "<div class = 'title-sect'>";
         echo "<b><p><gt>" . $reply['username'] . "</gt></b> <tc>" . htmlspecialchars($reply['tripcode']) ."</tc> Post ID: #" . ($reply['id']) . "</p></b>";
+          echo "</div>";
+          echo "</div>";
         echo $replies = findPostReplies($post['id'], $reply['id']);
         echo "<p>" . $replies . "</p>";
         echo "<p>" . $reply['text'] . "</p>";        if ($reply['image_path']) {
@@ -276,15 +448,65 @@ function setReplyId(id) {
   </script>
   
   
-<script src="greentextandyoutube.js"></script>
+ <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Select elements to check (e.g., all divs or a specific container)
+            const lines = document.querySelectorAll("p");
+            
+            lines.forEach(line => {
+                if (line.textContent.trim().startsWith(">")) {
+                    line.classList.add("greentext");
+                }
+            });
+        });
+    </script>
     
 <script src="tagging.js"></script>
     
 <script src="spoilers.js"></script>
 
-    
-       <style>
 
+    <script>
+  window.addEventListener('pageshow', function(event) {
+    // Check if the page was loaded from the bfcache
+    if (event.persisted) {
+      clearForms();
+    }
+    // Also run on normal page loads to ensure consistency
+    clearForms();
+  });
+
+  function clearForms() {
+    var forms = document.querySelectorAll('form');
+    forms.forEach(function(form) {
+      form.reset(); // The built-in HTML form reset method
+    });
+
+    // For inputs not within a formal <form> tag, you can use selectors:
+    // document.querySelectorAll('input, textarea, select').forEach(function(el) {
+    //   if (el.type === 'checkbox' || el.type === 'radio') {
+    //     el.checked = false;
+    //   } else {
+    //     el.value = '';
+    //   }
+    // });
+  }
+</script>
+    
+        <style>
+             .greentext { color: green; }
+   .reply-header{
+           background-color: rgb(182, 196, 210); 
+           padding:2px;
+           width:400px;
+           border: 1px solid rgb(78, 103, 128);
+
+         }
+         .title-sect{
+              margin-left: 30px;
+  margin-top: -40px;
+         }
+               
    
 .container {
     background-color: var(--bg-color);
@@ -363,6 +585,10 @@ function setReplyId(id) {
  color:blue;
   font-weight: bold; /* Makes the text bold (equivalent to 700) */
 }
+.Admin {
+ color:red;
+  font-weight: bold; /* Makes the text bold (equivalent to 700) */
+}
    tc {
  color:green;
  text-decoration: underline;
@@ -384,7 +610,12 @@ font-size: 0.8em; /* Makes the text size 80% of its parent element's font size *
             background-color: transparent; /* Makes background transparent */
             color: initial; /* Reverts text color to default page color */
         }
-
+ .dropdown { position: relative; display: inline-block; }
+    .dropbtn { background-color: rgb(151, 173, 195); color: rgb(78, 103, 128); padding: 3px;  border: 1px solid rgb(78, 103, 128); cursor: pointer; font-weight: bold; font-size:14px; }  
+    .dropdown-content { display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
+    .dropdown-content button { color: black; padding: 12px 16px; text-decoration: none; display: block; border: none; background: none; width: 100%; text-align: left; }
+    .dropdown-content button:hover { background-color: #f1f1f1; }
+    .show { display: block; }
        </style>
 </body>
 </html>
