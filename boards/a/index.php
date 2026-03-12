@@ -34,6 +34,18 @@ function formatBytes($bytes, $precision = 2) {
 <html lang="en">
 <head>
     <title>Image Board</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q0MZX600Y4"></script>
+    
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Q0MZX600Y4');
+</script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -125,10 +137,9 @@ if ($images) {
         <textarea name="description" id="description" rows="4" cols="50"></textarea><br>
         <label for="image">Upload Image:</label>
         <input type="file" name="image" id="image" accept="image/*" required><br>
-        
-            <div id="myDivClass" class="hidden">
-        <button type="submit" name="submit_post">Post</button>
-   </div>
+
+        <button type="submit" name="submit_post" id="submitbutton" disabled>Post</button>
+
     </form>
     
       <style>
@@ -180,14 +191,97 @@ if ($images) {
   }
   </style>
     
+      <script>
+  function enablePosts() {
+
+  const button = document.getElementById("submitbutton");
+
+  // Enable the button by setting the disabled property to false
+  button.disabled = false;
+  }
+   
+</script>
+  
+             <?php
+    // 1. Get the user's IP address
+$ip = $_SERVER['REMOTE_ADDR'];
+
+// 2. Create a unique hash based on the IP (and optional salt for extra security)
+$hash = substr(hash('sha256', $ip . 'optional_salt'), 0, 16);
+
+// 3. Create a "shadowmask" (e.g., mask part of the IP)
+// This masks the last two octets of an IPv4 address
+$maskedIp = preg_replace('/(\d+)\.(\d+)\.(\d+)\.(\d+)/', '$1.$2.XXX.XXX', $ip);
+
+// 4. Combine mask and hash for the final ID
+$shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
+
+$banFile = 'banned.json';
+$message = "";
+$isBanned = false;
+
+// Handle button click
+if (isset($_POST['check_ban'])) {
+    if (file_exists($banFile)) {
+        $jsonContent = file_get_contents($banFile);
+        $bannedUsers = json_decode($jsonContent, true);
+
+        // Check if ID exists in JSON
+        if (isset($bannedUsers[$shadowMaskId])) {
+            $isBanned = true;
+            $data = $bannedUsers[$shadowMaskId];
+            $message = "<div style='color: white; background-color: red; padding: 10px; border-radius: 5px;'>
+                            <strong>USER BANNED</strong><br>
+                            Reason: {$data['reason']}<br>
+                            Date: {$data['date']}
+                        </div>";
+        } else {
+            $message = "<div style='color: white; background-color: green; padding: 10px; border-radius: 5px;'>
+                           You are not banned!
+                        </div>";
+            echo '<script>';
+// Pass PHP data to JavaScript using json_encode for safety
+echo 'enablePosts();';
+echo '</script>';
+        }
+    } else {
+        $message = "Error: Ban list not found.";
+    }
+}
+?>
+  <form method="post">
+        <button type="submit" name="check_ban" id="banbutton" disabled>Check Ban Status</button>
+    </form>
+
+    <br>
+    <?php echo $message; ?>
+        
+
+    <div 
+  class="cf-turnstile" 
+  data-sitekey="0x4AAAAAACpzlOrqUUjsRKbz" 
+  data-callback="handleSuccess"
+></div>
+
+
     
-         <button id="openPopup">Get captcha</button>
  <button onclick="window.location.href='/index.php'">Return to home page</button>
     
      <button onclick="window.location.href='/boards/a/archive.php'">View thread archives</button>
 
  <button class="open-button" onclick="openForm()">Change Layout</button>
 
+    <script>
+  function handleSuccess(token) {
+    console.log("Turnstile success! Token:", token);
+    // You can now enable a submit button, submit the form with AJAX, etc.
+  const button = document.getElementById("banbutton");
+
+  // Enable the button by setting the disabled property to false
+  button.disabled = false;
+  }
+   
+</script>
    
    <!-- The Popup Form -->
     <div class="form-popup" id="myForm">
@@ -234,39 +328,7 @@ function applyChanges() {
   </script>
    
    
-    <div id="popup" class="popup">
-        <div class="popup-content">
-          
-<div id="captcha-box">
-    <h3>Verification</h3>
-    <div id="progression">Stage 1 of 3</div>
-    
-    <!-- Stage 1 -->
-    <div id="stage1">
-        <div class="captcha-img" id="img1"></div><br>
-        <input type="text" id="input1" placeholder="Enter text">
-        <button onclick="checkStage(1)">Submit</button>
-    </div>
-
-    <!-- Stage 2 -->
-    <div id="stage2" class="hidden">
-        <div class="captcha-img" id="img2"></div><br>
-        <input type="text" id="input2" placeholder="Enter text">
-        <button onclick="checkStage(2)">Submit</button>
-    </div>
-
-    <!-- Stage 3 -->
-    <div id="stage3" class="hidden">
-        <div class="captcha-img" id="img3"></div><br>
-        <input type="text" id="input3" placeholder="Enter text">
-        <button onclick="checkStage(3)">Submit</button>
-    </div>
-
-    <div id="success" class="hidden" style="color: green;">Verified Successfully!</div>
-   <button id="exitButton" class="hidden">Exit captcha</button>
-</div>
-        </div>
-    </div>
+  
   
   
   
@@ -341,6 +403,35 @@ window.addEventListener('click', (event) => {
   </script> <!-- Link your JavaScript file -->
   
 
+    <script>
+  window.addEventListener('pageshow', function(event) {
+    // Check if the page was loaded from the bfcache
+    if (event.persisted) {
+      clearForms();
+    }
+    // Also run on normal page loads to ensure consistency
+    clearForms();
+  });
+
+  function clearForms() {
+    var forms = document.querySelectorAll('form');
+    forms.forEach(function(form) {
+      form.reset(); // The built-in HTML form reset method
+    });
+
+    // For inputs not within a formal <form> tag, you can use selectors:
+    // document.querySelectorAll('input, textarea, select').forEach(function(el) {
+    //   if (el.type === 'checkbox' || el.type === 'radio') {
+    //     el.checked = false;
+    //   } else {
+    //     el.value = '';
+    //   }
+    // });
+  }
+</script>
+
+    
+    
 
     <h1>Recent Threads</h1>
     <?php
@@ -400,16 +491,7 @@ window.addEventListener('click', (event) => {
     
     
      <style>
-       
-body {
-  /* Fallback color */
-  background: #D5DEE7; 
-  /* Ensures the gradient covers the entire page */
-  height: 100vh; 
-  margin: 0;
-  background-attachment: fixed;
-  font-family: Arial, sans-serif;/* Prevents the gradient from repeating if content is short */
-}
+ 
        
          gt {
  color:green;
