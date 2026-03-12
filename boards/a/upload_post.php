@@ -1,11 +1,28 @@
 <?php
+    
+
 function handlePostUpload() {
+    
+           // 1. Get the user's IP address
+$ip = $_SERVER['REMOTE_ADDR'];
+
+// 2. Create a unique hash based on the IP (and optional salt for extra security)
+$hash = substr(hash('sha256', $ip . 'optional_salt'), 0, 16);
+
+// 3. Create a "shadowmask" (e.g., mask part of the IP)
+// This masks the last two octets of an IPv4 address
+$maskedIp = preg_replace('/(\d+)\.(\d+)\.(\d+)\.(\d+)/', '$1.$2.XXX.XXX', $ip);
+
+// 4. Combine mask and hash for the final ID
+$shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
+
     $id = time() . mt_rand(100, 999); // Unique numeric ID
     $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
     $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
     $tripcode = filter_input(INPUT_POST, 'content3', FILTER_SANITIZE_STRING);
     $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
     $timestamp = date('Y-m-d H:i:s');
+    $shadowmask = $shadowMaskId;
     $uploadDir = 'uploads/';
     $uploadFile = $uploadDir . basename($_FILES['image']['name']);
     $fileSize = $_FILES['image']['size'];
@@ -30,7 +47,8 @@ function handlePostUpload() {
             'tripcode' => $tripcode,
             'image_path' => $targetFilePath,
             'timestamp' => $timestamp,
-            'file_size' => $fileSize
+            'file_size' => $fileSize,
+            'shadowmask' =>  $shadowmask
         ];
 
         // Read existing posts, add new one, and save back to JSON file
