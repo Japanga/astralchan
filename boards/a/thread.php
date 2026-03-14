@@ -106,7 +106,8 @@ function archiveThread($files, $dest) {
     $timestamp = date('Y-m-d H-i-s');
         $url = $dest . '/' . 'thread_archive.php?id=' . $idString;
 $link_text = "Visit archived thread";
-    return "<st>Archived automatically at $timestamp to: $dest <a href='$url'>$link_text</a></st>";
+       echo '<img src="https://i.imgur.com/IOUkjLB.png" alt="Description of image" / style="width:41px; height:41px;">';
+    return "<st><i>Archived automatically at $timestamp to: $dest <a href='$url'>$link_text</a></i></st>";
 }
 
 // --- Execute ---
@@ -231,7 +232,11 @@ if ($images) {
         <label for="reply_text">Reply:</label><br>
         <textarea name="reply_text" id="reply_text" rows="2" cols="50"></textarea><br>
         <label for="reply_image">Upload Image (optional):</label>
-        <input type="file" name="reply_image" id="reply_image" accept="image/*"><br>       
+        <input type="file" name="reply_image" id="reply_image" accept="image/*"><br>     
+            <label>
+        <input type="checkbox" name="is_spoiler" value="1">
+        [Spoiler?]
+    </label><br>
         <button type="submit" name="submit_reply" id="submitbutton" disabled>Reply</button>
     </form>
 
@@ -261,7 +266,7 @@ $maskedIp = preg_replace('/(\d+)\.(\d+)\.(\d+)\.(\d+)/', '$1.$2.XXX.XXX', $ip);
 // 4. Combine mask and hash for the final ID
 $shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
 
-$banFile = 'banned.json';
+$banFile = $_SERVER['DOCUMENT_ROOT'] . '/banlist/banned.json';
 $message = "";
 $isBanned = false;
 
@@ -275,10 +280,12 @@ if (isset($_POST['check_ban'])) {
         if (isset($bannedUsers[$shadowMaskId])) {
             $isBanned = true;
             $data = $bannedUsers[$shadowMaskId];
+               $url = "banned.php";
+$link_text = "You are banned.";
             $message = "<div style='color: white; background-color: red; padding: 10px; border-radius: 5px;'>
-                            <strong>USER BANNED</strong><br>
-                            Reason: {$data['reason']}<br>
-                            Date: {$data['date']}
+            
+                           <a href='$url' style='color:white;'>$link_text</a><br>
+                         
                         </div>";
         } else {
             $message = "<div style='color: white; background-color: green; padding: 10px; border-radius: 5px;'>
@@ -355,6 +362,67 @@ function applyChanges() {
     <div class="replies-section">
     <?php
     $replies = getReplies($postId);
+        
+        function check_spoiler_status($post_id, $reply_id) {
+    // Define the file path
+    $file_path = 'replies/' . $post_id . '.json';
+
+    // 1. Read the JSON file content into a string
+    if (!file_exists($file_path)) {
+        echo "Error: JSON file not found for post ID $post_id";
+        return false;
+    }
+    $json_string = file_get_contents($file_path);
+    if ($json_string === false) {
+        echo "Error: Could not read the JSON file";
+        return false;
+    }
+
+    // 2. Decode the JSON string into a PHP associative array
+    $data = json_decode($json_string, true);
+    if ($data === null) {
+        echo "Error: Could not decode the JSON data";
+        return false;
+    }
+
+    // 3. Find the specific reply by ID
+    $found_reply = null;
+    // Assuming the JSON structure is an array of reply objects
+    foreach ($data as $reply) {
+        // You would need to know the key for the reply ID in your JSON structure (e.g., 'id')
+        if (isset($reply['id']) && $reply['id'] == $reply_id) {
+            $found_reply = $reply;
+            break; // Stop searching once found
+        }
+    }
+
+    // 4. Check if the reply was found and if "spoilerStatus" is 1
+    if ($found_reply !== null) {
+        // Use isset() to ensure the key exists before checking the value
+        if (isset($found_reply['spoilerStatus']) && $found_reply['spoilerStatus'] == 1) {
+            // Perform the function/action here
+            echo '<div class="spoiler-container">';
+             echo "<img src='" . htmlspecialchars($reply['image_path']) . "' width='200'><br>";
+             echo '<img src="https://i.imgur.com/xBUBByL.png" alt="Top Image" class="image top-image">';
+    echo '</div>';
+               echo '</div>';
+            return true;
+        } else {
+            echo "<img src='" . htmlspecialchars($reply['image_path']) . "' width='200'><br>";
+            return false;
+        }
+    } else {
+        echo "Reply ID $reply_id not found in the file";
+        return false;
+    }
+}
+
+// A placeholder function to be called when the condition is met
+function perform_spoiler_action($reply_id) {
+   
+}
+   
+
     foreach ($replies as $reply) {
         echo "<div class='reply' id='" . $reply['id'] . "'>";
     echo '<div class="reply-header">';
@@ -393,10 +461,12 @@ echo '<script>
           echo "</div>";
         echo $replies = findPostReplies($post['id'], $reply['id']);
         echo "<p>" . $replies . "</p>";
-        echo "<p>" . $reply['text'] . "</p>";        if ($reply['image_path']) {
-            echo "<img src='" . htmlspecialchars($reply['image_path']) . "' width='200'><br>";
-         
+        echo "<p>" . $reply['text'] . "</p>";       if ($reply['image_path']) {  
+             check_spoiler_status($post['id'], $reply['id']);
         }
+       
+    
+    
         $replyId = htmlspecialchars($reply['id'], ENT_QUOTES, 'UTF-8');
         
 echo " <hiddenr><button onclick=\"setReplyId('$replyId')\">Reply to # </button></hiddenr>";
@@ -494,6 +564,39 @@ function setReplyId(id) {
 </script>
     
         <style>
+ .spoiler-container {
+    /* Set the container to position: relative so absolute positioning works within it */
+    position: relative;
+    /* Set a specific width and height for consistency, or the size of your images */
+    width: 400px; 
+    height: 300px;
+    cursor: pointer; /* Optional: adds a hand cursor on hover */
+}
+
+.image {
+    /* Position both images absolutely to stack them */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    /* Ensure they are the same size */
+}
+
+.top-image {
+    /* The top image is fully visible by default */
+    opacity: 1;
+    /* Add a smooth transition effect for the opacity change */
+    transition: opacity 0.5s ease;
+    /* Ensure it is above the bottom image */
+    z-index: 2;
+}
+
+/* When hovering over the container, change the opacity of the top image */
+.spoiler-container:hover .top-image {
+    opacity: 0;
+}
+
              .greentext { color: green; }
    .reply-header{
            background-color: rgb(182, 196, 210); 
