@@ -23,6 +23,7 @@ $shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
     $imagePath = null;
     $fileSize = 0;
     $shadowmask = $shadowMaskId;
+    $isSpoiler = isset($_POST['is_spoiler']) ? 1 : 0;
 
     // Handle image upload if one is provided
     if (isset($_FILES['reply_image']) && $_FILES['reply_image']['error'] === UPLOAD_ERR_OK) {
@@ -51,7 +52,8 @@ $shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
         'image_path' => $imagePath,
         'timestamp' => $timestamp,
         'file_size' => $fileSize,
-        'shadowmask' => $shadowmask
+        'shadowmask' => $shadowmask,
+        'spoilerStatus' => $isSpoiler
     ];
 
     // Read existing replies for this post, add new one, and save back to JSON file
