@@ -124,11 +124,7 @@ if ($images) {
     <h1>Create a New Thread</h1>
     <!-- Form for uploading image and text -->
     <form action="index.php" method="POST" enctype="multipart/form-data">
-       <div class="container2">
-        <label for="description">Tripcode:</label><br>
-        <input type="password" id="password" placeholder="Enter password" oninput="generateTripcode()">
-        <input type="text" name="content3" id="tripcode" placeholder="Generated Tripcode" readonly>
-        </div>
+ 
         <label for="description">Name:</label><br>
          <textarea name="username" id="username" cols="20">Anonymous</textarea><br>
           <label for="description">Subject:</label><br>
@@ -216,7 +212,7 @@ $maskedIp = preg_replace('/(\d+)\.(\d+)\.(\d+)\.(\d+)/', '$1.$2.XXX.XXX', $ip);
 // 4. Combine mask and hash for the final ID
 $shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
 
-$banFile = 'banned.json';
+$banFile = $_SERVER['DOCUMENT_ROOT'] . '/banlist/banned.json';
 $message = "";
 $isBanned = false;
 
@@ -230,10 +226,12 @@ if (isset($_POST['check_ban'])) {
         if (isset($bannedUsers[$shadowMaskId])) {
             $isBanned = true;
             $data = $bannedUsers[$shadowMaskId];
+              $url = "banned.php";
+$link_text = "You are banned.";
             $message = "<div style='color: white; background-color: red; padding: 10px; border-radius: 5px;'>
-                            <strong>USER BANNED</strong><br>
-                            Reason: {$data['reason']}<br>
-                            Date: {$data['date']}
+            
+                           <a href='$url' style='color:white;'>$link_text</a><br>
+                         
                         </div>";
         } else {
             $message = "<div style='color: white; background-color: green; padding: 10px; border-radius: 5px;'>
@@ -261,6 +259,7 @@ echo '</script>';
   class="cf-turnstile" 
   data-sitekey="0x4AAAAAACpzlOrqUUjsRKbz" 
   data-callback="handleSuccess"
+  data-theme="light"
 ></div>
 
 
@@ -456,8 +455,8 @@ window.addEventListener('click', (event) => {
     foreach ($posts as $post) {
         echo "<div class='post'>";
         echo "<b><p><gt>" . htmlspecialchars($post['username']) . "</gt></b> <tc>" . htmlspecialchars($post['tripcode']) . "</tc> Post ID: " . htmlspecialchars($post['id']) . "</p>";
-          echo "<h2>" . htmlspecialchars($post['title']) . "</h2>";
-        echo "<p>" . htmlspecialchars($post['description']) . "</p>";
+          echo "<h2>" . $post['title'] . "</h2>";
+        echo "<p>" . $post['description'] . "</p>";
         echo "<a href='thread.php?id=" . htmlspecialchars($post['id']) . "'>";
         echo "<img src='" . htmlspecialchars($post['image_path']) . "' width='200'></a><br>";
         echo "<small>Uploaded: " . htmlspecialchars($post['timestamp']) . " | Size: " . formatBytes($post['file_size']) . "</small>";
@@ -490,9 +489,48 @@ window.addEventListener('click', (event) => {
     ?>
     
     
+        <script> 
+function generateTripcode() {
+  // 1. Simple consistent hashing function
+  const hashCode = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+    // Convert to a mix of alphanumeric and special characters
+    return Math.abs(hash).toString(36) + "x" + (hash % 1000).toString(16);
+  };
+
+  // 2. Select all paragraph elements
+  const paragraphs = document.querySelectorAll('p');
+
+  paragraphs.forEach(p => {
+    // 3. Regex to find "word#code" - matches letters/numbers before # and after
+    const regex = /(\w+)#(\w+)/g;
+    
+    if (regex.test(p.innerHTML)) {
+      p.innerHTML = p.innerHTML.replace(regex, (match, word, code) => {
+        // 4. Create the tripcode
+        const tripcode = "!" + hashCode(code);
+        return `${word} <tc>${tripcode}</tc>`;
+      });
+    }
+  });
+}
+
+// Run on load
+window.onload = generateTripcode;
+
+    </script>
+
+  
+    
      <style>
  
-       
+                 textarea {
+  resize: none;
+}
          gt {
  color:green;
          
