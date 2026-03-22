@@ -514,6 +514,29 @@ window.addEventListener('click', (event) => {
 function perform_spoiler_action($reply_id) {
    
 }
+    
+       
+ function processTripcodes($text) {
+    // Regex breakdown:
+    // (?<!#)    - Negative lookbehind: Ensure the first # is not preceded by another #
+    // #         - Match the # separator
+    // ([^#\s]+) - Capture the text after # (tripcode input), ensuring no spaces or more #
+    $pattern = '/(?<!#)#([^#\s]+)/';
+
+    return preg_replace_callback($pattern, function ($matches) {
+        // $matches[1] is the text after the #
+        $tripcodeText = $matches[1];
+        
+        // Generate a 10-character hash (like 4chan/anonymous style)
+        // Uses base64 and special characters for higher complexity
+        $hash = substr(base64_encode(hash('sha256', $tripcodeText, true)), 0, 10);
+        
+        // Return ! followed by the hash
+        return ' !<tc>' . $hash;
+    }, $text);
+}
+
+
    
     function displayLatestReply($postId) {
     $filePath = "./replies/" . $postId . ".json";
@@ -527,7 +550,9 @@ function perform_spoiler_action($reply_id) {
             // Display safely
             echo '<div class="latest-reply" style="font-size:0.9em; color:#555; padding:5px; margin-top:5px;">';
              echo '<div class="reply-header">';
-            echo '<strong><gt>' . htmlspecialchars($latest['username']) . '</gt> ' . htmlspecialchars($latest['timestamp']) . ' No. ' . htmlspecialchars($latest['id']) . ':</strong> ';
+            echo '<strong><gt>';
+            echo processTripcodes($latest['username']);
+            echo '</tc></gt> ' . htmlspecialchars($latest['timestamp']) . ' No. ' . htmlspecialchars($latest['id']) . ':</strong> ';
             echo '</div>';
             echo htmlspecialchars($latest['text']);
             echo '</div>';
@@ -552,6 +577,7 @@ function perform_spoiler_action($reply_id) {
     
     return $linkedText;
 }
+ 
     
     function displayPreviousReplies($postId, $num = 5) {
     $filename = './replies/' . $postId . '.json';
@@ -586,7 +612,9 @@ function perform_spoiler_action($reply_id) {
         // Assuming your JSON structure has 'author' and 'message'
         echo '<div class="old-reply" style="font-size:0.9em; color:#555; padding:5px; margin-top:5px;  border-top:1px solid #eee;">';
         echo '<div class="reply-header">';
-        echo '<strong><gt>' . ($reply['username']) . ':</gt></strong> <strong>' . ($reply['timestamp']) . ' No. ' . ($reply['id']) . ' </strong>';
+        echo '<strong><gt>'; 
+        echo $reply['username']; 
+        echo ':</gt></strong> <strong>' . ($reply['timestamp']) . ' No. ' . ($reply['id']) . ' </strong>';
         echo '</div>';
         echo linkifyHashNumbers($reply['text']);
         echo '</div>';
@@ -838,6 +866,7 @@ document.addEventListener('DOMContentLoaded', processSpoilers);
    tc {
  color:green;
  text-decoration: underline;
+ font-weight: normal;
 }
         st {
 font-size: 0.8em; /* Makes the text size 80% of its parent element's font size */
