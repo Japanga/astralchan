@@ -43,11 +43,16 @@ function formatBytes($bytes, $precision = 2) {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
     <title>Thread #<?php echo htmlspecialchars($postId); ?></title>
     <link rel="stylesheet" href="styles.css">
+    
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    
 </head>
 <body>
+
 
 <?php
 // Get the file creation time
@@ -85,6 +90,8 @@ $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'index.
 }
 body { padding-top: 40px; } /* Prevent overlay from covering content */
 </style>
+
+
 
 
 <?php
@@ -135,40 +142,18 @@ if ($images) {
     </ul>
 </div>
 
-<script>
-        // Simple client-side SHA256 simulation for demonstration
-        // In production, use crypto.subtle.digest for better security
-        async function generateTripcode() {
-            const password = document.getElementById('password').value;
-            if (!password) {
-                document.getElementById('tripcode').value = '';
-                return;
-            }
 
-            // Using SubtleCrypto API for SHA-256
-            const msgBuffer = new TextEncoder().encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            // Convert to base64, slice to get a 10-char string
-            const hashBase64 = btoa(String.fromCharCode(...hashArray));
-            
-            // Generate a 10 character tripcode
-            const tripcode = '!' + hashBase64.substring(0, 8);
-            document.getElementById('tripcode').value = tripcode;
-        }
-    </script>
     
     </div>
-    <div class = 'replyform'>
+    
     <a href="index.php">Back to main board</a>
-        </div>
     <h1>Thread #<?php echo htmlspecialchars($postId); ?></h1>
 
     <!-- Display original post -->
     <div class='original-post'>
         <h3><gt> <?php echo htmlspecialchars($post['username']); ?> </gt></b> <tc> <?php echo htmlspecialchars($post['tripcode']); ?> </tc> Post ID: <?php echo htmlspecialchars($post['id']); ?></h3>
          <h3>Title: <?php echo htmlspecialchars($post['title']); ?></h3>
-        <p><?php echo htmlspecialchars($post['description']); ?></p>
+        <p><?php echo $post['description']; ?></p>
            <?php echo $replies = findPostReplies($post['id'], $post['id']);?>
          <?php echo "<p>" . $replies . "</p>";?>
         <img src='<?php echo htmlspecialchars($post['image_path']); ?>' width='400'><br>
@@ -179,33 +164,74 @@ if ($images) {
     </div>
 
 
-
-
-
     <hr>
     <h2>Replies</h2>
 
-    <!-- Form for adding a reply -->
-    <div class="replyform">
-    <form action="thread.php?id=<?php echo htmlspecialchars($postId); ?>" method="POST" enctype="multipart/form-data">
-            <div class="container2">
-        <label for="description">Tripcode:</label><br>
-        <input type="password" id="password" placeholder="Enter password" oninput="generateTripcode()">
-        <input type="text" name="content4" id="tripcode" placeholder="Generated Tripcode" readonly>
-        </div>
-        <label for="reply_text">Name:</label><br>
-        <textarea name="username" id="username" cols="20">Anonymous</textarea><br>
-        <label for="reply_text">Reply:</label><br>
-        <textarea name="reply_text" id="reply_text" rows="2" cols="50"></textarea><br>
-        <label for="reply_image">Upload Image (optional):</label>
-        <input type="file" name="reply_image" id="reply_image" accept="image/*"><br>
-        <button type="submit" name="submit_reply">Reply</button>
-    </form>
-    
-    
- <button class="open-button" onclick="openForm()">Change Layout</button>
- </div>
+           
+        <script>
+  function enablePosts() {
+
+  const button = document.getElementById("submitbutton");
+
+  // Enable the button by setting the disabled property to false
+  button.disabled = false;
+  }
    
+</script>
+               <?php
+    // 1. Get the user's IP address
+$ip = $_SERVER['REMOTE_ADDR'];
+
+// 2. Create a unique hash based on the IP (and optional salt for extra security)
+$hash = substr(hash('sha256', $ip . 'optional_salt'), 0, 16);
+
+// 3. Create a "shadowmask" (e.g., mask part of the IP)
+// This masks the last two octets of an IPv4 address
+$maskedIp = preg_replace('/(\d+)\.(\d+)\.(\d+)\.(\d+)/', '$1.$2.XXX.XXX', $ip);
+
+// 4. Combine mask and hash for the final ID
+$shadowMaskId = "ID-" . $maskedIp . "-" . strtoupper($hash);
+
+$banFile = $_SERVER['DOCUMENT_ROOT'] . '/banlist/banned.json';
+$message = "";
+$isBanned = false;
+
+// Handle button click
+if (isset($_POST['check_ban'])) {
+    if (file_exists($banFile)) {
+        $jsonContent = file_get_contents($banFile);
+        $bannedUsers = json_decode($jsonContent, true);
+
+        // Check if ID exists in JSON
+        if (isset($bannedUsers[$shadowMaskId])) {
+            $isBanned = true;
+            $data = $bannedUsers[$shadowMaskId];
+               $url = "banned.php";
+$link_text = "You are banned.";
+            $message = "<div style='color: white; background-color: red; padding: 10px; border-radius: 5px;'>
+            
+                           <a href='$url' style='color:white;'>$link_text</a><br>
+                         
+                        </div>";
+        } else {
+            $message = "<div style='color: white; background-color: green; padding: 10px; border-radius: 5px;'>
+                           You are not banned!
+                        </div>";
+            echo '<script>';
+// Pass PHP data to JavaScript using json_encode for safety
+echo 'enablePosts();';
+echo '</script>';
+        }
+    } else {
+        $message = "Error: Ban list not found.";
+    }
+}
+?>
+
+
+    <br>
+    <?php echo $message; ?>
+
    <!-- The Popup Form -->
     <div class="form-popup" id="myForm">
         <form class="form-container">
@@ -255,6 +281,67 @@ function applyChanges() {
     <div class="replies-section">
     <?php
     $replies = getReplies($postId);
+        
+        function check_spoiler_status($post_id, $reply_id) {
+    // Define the file path
+    $file_path = 'replies/' . $post_id . '.json';
+
+    // 1. Read the JSON file content into a string
+    if (!file_exists($file_path)) {
+        echo "Error: JSON file not found for post ID $post_id";
+        return false;
+    }
+    $json_string = file_get_contents($file_path);
+    if ($json_string === false) {
+        echo "Error: Could not read the JSON file";
+        return false;
+    }
+
+    // 2. Decode the JSON string into a PHP associative array
+    $data = json_decode($json_string, true);
+    if ($data === null) {
+        echo "Error: Could not decode the JSON data";
+        return false;
+    }
+
+    // 3. Find the specific reply by ID
+    $found_reply = null;
+    // Assuming the JSON structure is an array of reply objects
+    foreach ($data as $reply) {
+        // You would need to know the key for the reply ID in your JSON structure (e.g., 'id')
+        if (isset($reply['id']) && $reply['id'] == $reply_id) {
+            $found_reply = $reply;
+            break; // Stop searching once found
+        }
+    }
+
+    // 4. Check if the reply was found and if "spoilerStatus" is 1
+    if ($found_reply !== null) {
+        // Use isset() to ensure the key exists before checking the value
+        if (isset($found_reply['spoilerStatus']) && $found_reply['spoilerStatus'] == 1) {
+            // Perform the function/action here
+            echo '<div class="spoiler-container">';
+             echo "<img src='" . htmlspecialchars($reply['image_path']) . "' width='200'><br>";
+             echo '<img src="https://i.imgur.com/xBUBByL.png" alt="Top Image" class="image top-image">';
+    echo '</div>';
+               echo '</div>';
+            return true;
+        } else {
+            echo "<img src='" . htmlspecialchars($reply['image_path']) . "' width='200'><br>";
+            return false;
+        }
+    } else {
+        echo "Reply ID $reply_id not found in the file";
+        return false;
+    }
+}
+
+// A placeholder function to be called when the condition is met
+function perform_spoiler_action($reply_id) {
+   
+}
+   
+
     foreach ($replies as $reply) {
         echo "<div class='reply' id='" . $reply['id'] . "'>";
     echo '<div class="reply-header">';
@@ -262,6 +349,7 @@ function applyChanges() {
 echo '  <button onclick="toggleDropdown(' . ($reply['id']) . ')" class="dropbtn">...</button>';
 echo '  <div id="dropdownContent' . ($reply['id']) . '" class="dropdown-content">';
  echo '  <button onclick="document.getElementById(\'' . $reply['id'] . '\').style.display = \'none\';">Hide this post</button>';
+ echo '<button><a href="report_form.php?post_id=' . $reply['id'] . '">Report post</a></button>'; 
 echo '  </div>';
         echo '  </div>';
         
@@ -293,10 +381,12 @@ echo '<script>
           echo "</div>";
         echo $replies = findPostReplies($post['id'], $reply['id']);
         echo "<p>" . $replies . "</p>";
-        echo "<p>" . $reply['text'] . "</p>";        if ($reply['image_path']) {
-            echo "<img src='" . htmlspecialchars($reply['image_path']) . "' width='200'><br>";
-         
+        echo "<p>" . $reply['text'] . "</p>";       if ($reply['image_path']) {  
+             check_spoiler_status($post['id'], $reply['id']);
         }
+       
+    
+    
         $replyId = htmlspecialchars($reply['id'], ENT_QUOTES, 'UTF-8');
         
 echo " <hiddenr><button onclick=\"setReplyId('$replyId')\">Reply to # </button></hiddenr>";
@@ -361,53 +451,160 @@ function setReplyId(id) {
         });
     </script>
     
+    
 <script src="tagging.js"></script>
     
-<script src="spoilers.js"></script>
-
-
-    <script>
-  window.addEventListener('pageshow', function(event) {
-    // Check if the page was loaded from the bfcache
-    if (event.persisted) {
-      clearForms();
-    }
-    // Also run on normal page loads to ensure consistency
-    clearForms();
-  });
-
-  function clearForms() {
-    var forms = document.querySelectorAll('form');
-    forms.forEach(function(form) {
-      form.reset(); // The built-in HTML form reset method
-    });
-
-    // For inputs not within a formal <form> tag, you can use selectors:
-    // document.querySelectorAll('input, textarea, select').forEach(function(el) {
-    //   if (el.type === 'checkbox' || el.type === 'radio') {
-    //     el.checked = false;
-    //   } else {
-    //     el.value = '';
-    //   }
-    // });
-  }
-</script>
+<script src="spoilers.js"></script>    
     
-       <style>
-           body {  background-image: linear-gradient(to bottom, #444444 0%, #555555 10%, #222222 10%, #333333 40%, #111111 100%);
+      
+    <script> 
+// Example JS function to make element draggable
+function dragElement(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    const header = document.getElementById(elmnt.id + "header");
+    if (header) header.onmousedown = dragMouseDown;
+    else elmnt.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX; pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+        pos3 = e.clientX; pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null; document.onmousemove = null;
+    }
+}
+dragElement(document.getElementById("mydiv"));
+
+    </script>
+  
+         
+    <script> 
+function generateTripcode() {
+  // 1. Simple consistent hashing function
+  const hashCode = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+    // Convert to a mix of alphanumeric and special characters
+    return Math.abs(hash).toString(36) + "x" + (hash % 1000).toString(16);
+  };
+
+  // 2. Select all paragraph elements
+  const paragraphs = document.querySelectorAll('p');
+
+  paragraphs.forEach(p => {
+    // 3. Regex to find "word#code" - matches letters/numbers before # and after
+    const regex = /(\w+)#(\w+)/g;
+    
+    if (regex.test(p.innerHTML)) {
+      p.innerHTML = p.innerHTML.replace(regex, (match, word, code) => {
+        // 4. Create the tripcode
+        const tripcode = "!" + hashCode(code);
+        return `${word} </b><tc>${tripcode}</tc>`;
+      });
+    }
+  });
+}
+
+// Run on load
+window.onload = generateTripcode;
+
+    </script>
+
+  
+
+  
+    
+        <style>
+            
+
+ body {  background-image: linear-gradient(to bottom, #444444 0%, #555555 10%, #222222 10%, #333333 40%, #111111 100%);
   color: #D6D6D6;
   /* Ensures the gradient covers the entire page */
   height: 100vh; 
   margin: 0;
   background-attachment: fixed;
   font-family: Arial, sans-serif; } .snapshot-header { position: fixed; top: 0; left: 0; width: 100%; background: rgba(0,0,0,0.7); color: white; padding: 10px; z-index: 9999; text-align: center; }  .replyform {display:none;}  hiddenr {display:none;} 
-             .greentext { color: green; }
-    .reply-header{
+            textarea {
+  resize: none;
+}
+            .reply-header{
            background-image: linear-gradient(135deg, #2b2b2b 0%, #060606 100%);
            padding:2px;
            width:400px;
            border: 2px solid rgb(107, 107, 107);
  border-radius: 15px;
+         }
+
+            .draggable-window {
+    position: fixed; /* Stays in place during scroll */
+    z-index: 9;
+    background-color: #f1f1f1;
+    border: 1px solid #d3d3d3;
+    top: 50px;
+    left: 50px;
+                width: 250px;
+}
+.window-header {
+    padding: 10px;
+    cursor: move;
+    background-color: rgba(153, 136, 238);
+    color: black;
+      border: 2px solid black;
+}
+ .spoiler-container {
+    /* Set the container to position: relative so absolute positioning works within it */
+    position: relative;
+    /* Set a specific width and height for consistency, or the size of your images */
+    width: 400px; 
+    height: 300px;
+    cursor: pointer; /* Optional: adds a hand cursor on hover */
+}
+
+.image {
+    /* Position both images absolutely to stack them */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    /* Ensure they are the same size */
+}
+
+.top-image {
+    /* The top image is fully visible by default */
+    opacity: 1;
+    /* Add a smooth transition effect for the opacity change */
+    transition: opacity 0.5s ease;
+    /* Ensure it is above the bottom image */
+    z-index: 2;
+}
+
+/* When hovering over the container, change the opacity of the top image */
+.spoiler-container:hover .top-image {
+    opacity: 0;
+}
+
+             .greentext { color: green; }
+   .reply-header{
+           background-color: rgb(182, 196, 210); 
+           padding:2px;
+           width:400px;
+           border: 1px solid rgb(78, 103, 128);
+
          }
          .title-sect{
               margin-left: 30px;
@@ -505,20 +702,22 @@ font-size: 0.8em; /* Makes the text size 80% of its parent element's font size *
     color: grey;
          
 }
-            .spoiler {
-            background-color: black;
-            color: black;
-            cursor: pointer; /* Indicates the text is interactive */
-            transition: color 0.3s, background-color 0.3s;
-        }
+    
+            .spoiler-content {
+    background-color: #333;
+    color: transparent;
+    cursor: pointer;
+    padding: 0 4px;
+    border-radius: 3px;
+    transition: background-color 0.3s, color 0.3s;
+}
 
-        /* Style for when the spoiler is hovered over or clicked (revealed) */
-        .spoiler:hover, .spoiler.revealed {
-            background-color: transparent; /* Makes background transparent */
-            color: initial; /* Reverts text color to default page color */
-        }
+.spoiler-content:hover {
+    background-color: transparent;
+    color: inherit;
+}
  .dropdown { position: relative; display: inline-block; }
-    .dropbtn { background-color: rgb(59, 59, 59); color: black; padding: 3px;  border: 1px solid black; cursor: pointer; font-weight: bold; font-size:14px; }  
+ .dropbtn { background-color: rgb(59, 59, 59); color: black; padding: 3px;  border: 1px solid black; cursor: pointer; font-weight: bold; font-size:14px; }   
     .dropdown-content { display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
     .dropdown-content button { color: black; padding: 12px 16px; text-decoration: none; display: block; border: none; background: none; width: 100%; text-align: left; }
     .dropdown-content button:hover { background-color: #f1f1f1; }
