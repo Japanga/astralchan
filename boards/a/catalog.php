@@ -96,6 +96,18 @@ function time_ago_in_days($timestamp) {
     }
 }
 
+
+function getLatestReplyTimestamp($postId) {
+    $filePath = __DIR__ . "/replies/{$postId}.json";
+
+    if (file_exists($filePath)) {
+        // filemtime returns the Unix timestamp of last modification
+        return filemtime($filePath); 
+    } else {
+        return false; // File not found
+    }
+}
+
 ?>
     <div class = 'replyform'>
    <header class="header-bg">
@@ -128,6 +140,9 @@ function time_ago_in_days($timestamp) {
 
  <a href="index.php">Back to main board</a>
 
+        
+  
+
    <div class="grid-container">
     <?php foreach ($posts as $post): ?>
         <div class="post-item">
@@ -135,7 +150,10 @@ function time_ago_in_days($timestamp) {
                 <img src="<?php echo $post['image_path']; ?>" alt="Post Image">
                 <div class="overlay">
                     <p>by <?php echo $post['username']; ?> <em><?php echo time_ago_in_days($post['timestamp']); ?></em></p>
-      
+                    <?php 
+                    $timestamp = getLatestReplyTimestamp($post['id']);
+                    echo 'Latest reply: ' . $timestampconverted = time_ago_in_days($timestamp);
+                    ?>
                 </div>
                  </a>
                  <p>R: <?php echo getReplyCount($post['id']); ?> I: <?php echo countValidImagePaths($post['id']); ?></p>
