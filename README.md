@@ -63,7 +63,7 @@ The trash canning of posts connects in to the archiving functionalities of Astra
 All boards support auto-archiving, but /b/ is currently the only board on the live site that is configured to properly "prune" threads after 24 hours. Manual archiving was quickly proven obsolete when the automatic archiving function was developed. Auto archiving was added to all boards for the efficiency, but pruning has only been added to /b/ because of wanting to preserve higher traffic threads on the other boards. To create a true pruning function without offline functions proved to be truly challenging, but by automatically backing up threads from the thread.php and routinely clearing old posts from posts.json in the thread.php, a very efficiently functioning machine for automatically purging old posts was developed.
 
 ## Nesting/sidechain replies
-<img src="https://i.imgur.com/Ph6snIB.png" width="460">
+<img src="https://i.imgur.com/7Oo2JNI.png" width="460">
 "Nesting" is a term for a feature commonly found on most imageboards, where some of the replies to the original post can be found on the side of the original thread post. A link that counts all replies "nested" in the thread that are not shown on the current page is created, and you are enticed to go inside the thread to view the hidden replies. Nesting took some time to perfect, but is not manual by any means and all posts in the replies .json files that are not one of the bottom 4 most recent replies that would appear in the page are automatically given a "hidden":true marker to be detected as hidden replies by the system.
 
 
