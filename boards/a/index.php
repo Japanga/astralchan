@@ -28,6 +28,8 @@ function formatBytes($bytes, $precision = 2) {
 
     return round($bytes, $precision) . ' ' . $units[$pow];
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -650,8 +652,41 @@ function perform_spoiler_action($reply_id) {
     // Display notice
     echo '<st>';
    echo '<img src="https://i.imgur.com/aVrQ7EL.png" alt="Description of image" / style="width:35px; height:25px;">';
-    echo 'Old/hidden posts succesfully nested at ' . date('H:i:s');
+    echo 'Old/hidden posts nested automatically at ' . date('H:i:s');
     echo '</st>';
+}
+    
+   
+
+    function updateReplyCounts($postsFile, $repliesDir) {
+    // 1. Read and decode the posts.json file
+    if (!file_exists($postsFile)) return "Posts file not found.";
+    $postsData = json_decode(file_get_contents($postsFile), true);
+
+    // 2. Iterate through each post to update reply_count
+    foreach ($postsData as &$post) {
+        $replyFile = $repliesDir . $post['id'] . '.json';
+        
+        // Check if reply file exists, count its contents
+        if (file_exists($replyFile)) {
+            $replies = json_decode(file_get_contents($replyFile), true);
+            // Count replies, assuming it's a list/array
+            $post['reply_count'] = is_array($replies) ? count($replies) : 0;
+        } else {
+            // If no replies file, set count to 0
+            $post['reply_count'] = 0;
+        }
+    }
+    unset($post); // Break reference
+
+    // 3. Overwrite the original posts.json with updated data
+    file_put_contents($postsFile, json_encode($postsData, JSON_PRETTY_PRINT));
+    return "<st>All threads organized by bump order.</st>";
+}
+    
+    function sort_by_reply_count_desc($a, $b)
+{
+    return $b['reply_count'] <=> $a['reply_count']; // Descending order
 }
     function getReplyCount($postId) {
     // Sanitize ID to prevent path traversal
@@ -671,10 +706,14 @@ function perform_spoiler_action($reply_id) {
     return is_array($replies) ? count($replies) : 0;
 }
     $posts = getPosts();
+    
+    usort($posts, 'sort_by_reply_count_desc');
+    
     foreach ($posts as $post) {
          echo "<div class='containernew'>";
           echo " <div class='right-section'>";
         echo "<div class='post'>";
+        echo updateReplyCounts('posts.json', 'replies/');
         echo "<b><p><gt>" . htmlspecialchars($post['username']) . "</gt></b> <tc>" . htmlspecialchars($post['tripcode']) . "</tc> Post ID: " . htmlspecialchars($post['id']) . "</p>";
           echo "<h2>" . $post['title'] . "</h2>";
         echo "<p>" . $post['description'] . "</p>";
