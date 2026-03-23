@@ -595,7 +595,7 @@ function perform_spoiler_action($reply_id) {
     $replies = json_decode($json, true);
 
     if (!$replies || count($replies) <= 1) {
-        echo "No previous replies.";
+        echo " ";
         return;
     }
 
@@ -713,7 +713,6 @@ function perform_spoiler_action($reply_id) {
          echo "<div class='containernew'>";
           echo " <div class='right-section'>";
         echo "<div class='post'>";
-        echo updateReplyCounts('posts.json', 'replies/');
         echo "<b><p><gt>" . htmlspecialchars($post['username']) . "</gt></b> <tc>" . htmlspecialchars($post['tripcode']) . "</tc> Post ID: " . htmlspecialchars($post['id']) . "</p>";
           echo "<h2>" . $post['title'] . "</h2>";
         echo "<p>" . $post['description'] . "</p>";
@@ -790,6 +789,7 @@ document.addEventListener('DOMContentLoaded', processSpoilers);
  
    
      <style>
+         .hidden { display: none; }
            .reply-header{
            background-color: rgb(182, 196, 210); 
            padding:6px;
