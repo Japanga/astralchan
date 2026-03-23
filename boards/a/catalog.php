@@ -108,6 +108,37 @@ function getLatestReplyTimestamp($postId) {
     }
 }
 
+ function updateReplyCounts($postsFile, $repliesDir) {
+    // 1. Read and decode the posts.json file
+    if (!file_exists($postsFile)) return "Posts file not found.";
+    $postsData = json_decode(file_get_contents($postsFile), true);
+
+    // 2. Iterate through each post to update reply_count
+    foreach ($postsData as &$post) {
+        $replyFile = $repliesDir . $post['id'] . '.json';
+        
+        // Check if reply file exists, count its contents
+        if (file_exists($replyFile)) {
+            $replies = json_decode(file_get_contents($replyFile), true);
+            // Count replies, assuming it's a list/array
+            $post['reply_count'] = is_array($replies) ? count($replies) : 0;
+        } else {
+            // If no replies file, set count to 0
+            $post['reply_count'] = 0;
+        }
+    }
+    unset($post); // Break reference
+
+    // 3. Overwrite the original posts.json with updated data
+    file_put_contents($postsFile, json_encode($postsData, JSON_PRETTY_PRINT));
+    return "<st>All threads organized by bump order.</st>";
+}
+
+  function sort_by_reply_count_desc($a, $b)
+{
+    return $b['reply_count'] <=> $a['reply_count']; // Descending order
+}
+
 ?>
     <div class = 'replyform'>
    <header class="header-bg">
@@ -144,6 +175,7 @@ function getLatestReplyTimestamp($postId) {
   
 
    <div class="grid-container">
+   <?php usort($posts, 'sort_by_reply_count_desc'); ?>
     <?php foreach ($posts as $post): ?>
         <div class="post-item">
             <a href="thread.php?id=<?php echo $post['id']; ?>">
