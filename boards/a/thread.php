@@ -393,6 +393,26 @@ function applyChanges() {
 function perform_spoiler_action($reply_id) {
    
 }
+        
+        function processTripcodes($text) {
+    // Regex breakdown:
+    // (?<!#)    - Negative lookbehind: Ensure the first # is not preceded by another #
+    // #         - Match the # separator
+    // ([^#\s]+) - Capture the text after # (tripcode input), ensuring no spaces or more #
+    $pattern = '/(?<!#)#([^#\s]+)/';
+
+    return preg_replace_callback($pattern, function ($matches) {
+        // $matches[1] is the text after the #
+        $tripcodeText = $matches[1];
+        
+        // Generate a 10-character hash (like 4chan/anonymous style)
+        // Uses base64 and special characters for higher complexity
+        $hash = substr(base64_encode(hash('sha256', $tripcodeText, true)), 0, 10);
+        
+        // Return ! followed by the hash
+        return ' !<tc>' . $hash;
+    }, $text);
+}
    
 
     foreach ($replies as $reply) {
@@ -429,7 +449,9 @@ echo '<script>
     }
 </script>';
          echo "<div class = 'title-sect'>";
-        echo "<b><p><gt>" . $reply['username'] . "</gt></b> <tc>" . htmlspecialchars($reply['tripcode']) ."</tc> Post ID: #" . ($reply['id']) . "</p></b>";
+        echo "<b><p><gt>";
+        echo processTripcodes($reply['username']);
+        echo "</tc></gt></b> <tc>" . htmlspecialchars($reply['tripcode']) ."</tc> Post ID: #" . ($reply['id']) . "</p></b>";
           echo "</div>";
           echo "</div>";
         echo $replies = findPostReplies($post['id'], $reply['id']);
@@ -542,46 +564,14 @@ dragElement(document.getElementById("mydiv"));
     </script>
   
          
-    <script> 
-function generateTripcode() {
-  // 1. Simple consistent hashing function
-  const hashCode = (str) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = ((hash << 5) - hash) + str.charCodeAt(i);
-      hash |= 0; // Convert to 32bit integer
-    }
-    // Convert to a mix of alphanumeric and special characters
-    return Math.abs(hash).toString(36) + "x" + (hash % 1000).toString(16);
-  };
-
-  // 2. Select all paragraph elements
-  const paragraphs = document.querySelectorAll('p');
-
-  paragraphs.forEach(p => {
-    // 3. Regex to find "word#code" - matches letters/numbers before # and after
-    const regex = /(\w+)#(\w+)/g;
-    
-    if (regex.test(p.innerHTML)) {
-      p.innerHTML = p.innerHTML.replace(regex, (match, word, code) => {
-        // 4. Create the tripcode
-        const tripcode = "!" + hashCode(code);
-        return `${word} </b><tc>${tripcode}</tc>`;
-      });
-    }
-  });
-}
-
-// Run on load
-window.onload = generateTripcode;
-
-    </script>
+   
 
   
 
   
     
         <style>
+            .hidden { display: none; }
             textarea {
   resize: none;
 }
@@ -732,6 +722,7 @@ window.onload = generateTripcode;
    tc {
  color:green;
  text-decoration: underline;
+font-weight: normal;
 }
         st {
 font-size: 0.8em; /* Makes the text size 80% of its parent element's font size */
