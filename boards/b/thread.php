@@ -47,7 +47,8 @@ function formatBytes($bytes, $precision = 2) {
     <title>Thread #<?php echo htmlspecialchars($postId); ?></title>
     <link rel="stylesheet" href="styles.css">
     
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
     
 </head>
 <body>
@@ -170,28 +171,7 @@ if ($images) {
     </ul>
 </div>
 
-<script>
-        // Simple client-side SHA256 simulation for demonstration
-        // In production, use crypto.subtle.digest for better security
-        async function generateTripcode() {
-            const password = document.getElementById('password').value;
-            if (!password) {
-                document.getElementById('tripcode').value = '';
-                return;
-            }
 
-            // Using SubtleCrypto API for SHA-256
-            const msgBuffer = new TextEncoder().encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            // Convert to base64, slice to get a 10-char string
-            const hashBase64 = btoa(String.fromCharCode(...hashArray));
-            
-            // Generate a 10 character tripcode
-            const tripcode = '!' + hashBase64.substring(0, 8);
-            document.getElementById('tripcode').value = tripcode;
-        }
-    </script>
     
     </div>
     
@@ -213,24 +193,18 @@ if ($images) {
     </div>
 
 
-
-
-
     <hr>
     <h2>Replies</h2>
 
-    <!-- Form for adding a reply -->
+    <div id="mydiv" class="draggable-window">
+    <div id="mydivheader" class="window-header">Reply to Thread No. <?php echo htmlspecialchars($postId); ?></div>
     <div class="replyform">
     <form action="thread.php?id=<?php echo htmlspecialchars($postId); ?>" method="POST" enctype="multipart/form-data">
-            <div class="container2">
-        <label for="description">Tripcode:</label><br>
-        <input type="password" id="password" placeholder="Enter password" oninput="generateTripcode()">
-        <input type="text" name="content4" id="tripcode" placeholder="Generated Tripcode" readonly>
-        </div>
+ 
         <label for="reply_text">Name:</label><br>
         <textarea name="username" id="username" cols="20">Anonymous</textarea><br>
         <label for="reply_text">Reply:</label><br>
-        <textarea name="reply_text" id="reply_text" rows="2" cols="50"></textarea><br>
+        <textarea name="reply_text" id="reply_text" rows="2" cols="30"></textarea><br>
         <label for="reply_image">Upload Image (optional):</label>
         <input type="file" name="reply_image" id="reply_image" accept="image/*"><br>     
             <label>
@@ -239,9 +213,9 @@ if ($images) {
     </label><br>
         <button type="submit" name="submit_reply" id="submitbutton" disabled>Reply</button>
     </form>
-
- </div>
-    
+</div>
+</div>
+           
         <script>
   function enablePosts() {
 
@@ -307,10 +281,8 @@ echo '</script>';
 
     <br>
     <?php echo $message; ?>
-        
-   
-        
-    
+
+ 
  <button class="open-button" onclick="openForm()">Change Layout</button>
    
    <!-- The Popup Form -->
@@ -430,6 +402,7 @@ function perform_spoiler_action($reply_id) {
 echo '  <button onclick="toggleDropdown(' . ($reply['id']) . ')" class="dropbtn">...</button>';
 echo '  <div id="dropdownContent' . ($reply['id']) . '" class="dropdown-content">';
  echo '  <button onclick="document.getElementById(\'' . $reply['id'] . '\').style.display = \'none\';">Hide this post</button>';
+ echo '<button><a href="report_form.php?post_id=' . $reply['id'] . '">Report post</a></button>'; 
 echo '  </div>';
         echo '  </div>';
         
@@ -531,39 +504,103 @@ function setReplyId(id) {
         });
     </script>
     
+    
 <script src="tagging.js"></script>
     
-<script src="spoilers.js"></script>
+<script src="spoilers.js"></script>    
+    
+      
+    <script> 
+// Example JS function to make element draggable
+function dragElement(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    const header = document.getElementById(elmnt.id + "header");
+    if (header) header.onmousedown = dragMouseDown;
+    else elmnt.onmousedown = dragMouseDown;
 
-
-    <script>
-  window.addEventListener('pageshow', function(event) {
-    // Check if the page was loaded from the bfcache
-    if (event.persisted) {
-      clearForms();
+    function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX; pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
     }
-    // Also run on normal page loads to ensure consistency
-    clearForms();
+
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+        pos3 = e.clientX; pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null; document.onmousemove = null;
+    }
+}
+dragElement(document.getElementById("mydiv"));
+
+    </script>
+  
+      <script> 
+function generateTripcode() {
+  // 1. Simple consistent hashing function
+  const hashCode = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+    // Convert to a mix of alphanumeric and special characters
+    return Math.abs(hash).toString(36) + "x" + (hash % 1000).toString(16);
+  };
+
+  // 2. Select all paragraph elements
+  const paragraphs = document.querySelectorAll('p');
+
+  paragraphs.forEach(p => {
+    // 3. Regex to find "word#code" - matches letters/numbers before # and after
+    const regex = /(\w+)#(\w+)/g;
+    
+    if (regex.test(p.innerHTML)) {
+      p.innerHTML = p.innerHTML.replace(regex, (match, word, code) => {
+        // 4. Create the tripcode
+        const tripcode = "!" + hashCode(code);
+        return `${word} </b><tc>${tripcode}</tc>`;
+      });
+    }
   });
+}
 
-  function clearForms() {
-    var forms = document.querySelectorAll('form');
-    forms.forEach(function(form) {
-      form.reset(); // The built-in HTML form reset method
-    });
+// Run on load
+window.onload = generateTripcode;
 
-    // For inputs not within a formal <form> tag, you can use selectors:
-    // document.querySelectorAll('input, textarea, select').forEach(function(el) {
-    //   if (el.type === 'checkbox' || el.type === 'radio') {
-    //     el.checked = false;
-    //   } else {
-    //     el.value = '';
-    //   }
-    // });
-  }
-</script>
+    </script>
+
+  
+  
+      
+  
     
         <style>
+            textarea {
+  resize: none;
+}
+            .draggable-window {
+    position: fixed; /* Stays in place during scroll */
+    z-index: 9;
+    background-color: #f1f1f1;
+    border: 1px solid #d3d3d3;
+    top: 50px;
+    left: 50px;
+                width: 250px;
+}
+.window-header {
+    padding: 10px;
+    cursor: move;
+     background-color: rgba(238, 170, 136);
+    color: darkred;
+      border: 2px solid darkred;
+}
  .spoiler-container {
     /* Set the container to position: relative so absolute positioning works within it */
     position: relative;
@@ -599,10 +636,10 @@ function setReplyId(id) {
 
              .greentext { color: green; }
    .reply-header{
-           background-color: rgb(234, 214, 203);
+          background-color: rgb(234, 214, 203);
            padding:2px;
            width:400px;
-           border: 1px solid rgb(130, 98, 90);
+           border: 1px solid rgb(157, 127, 111);
 
          }
          .title-sect{
@@ -701,20 +738,22 @@ font-size: 0.8em; /* Makes the text size 80% of its parent element's font size *
     color: grey;
          
 }
-            .spoiler {
-            background-color: black;
-            color: black;
-            cursor: pointer; /* Indicates the text is interactive */
-            transition: color 0.3s, background-color 0.3s;
-        }
+    
+            .spoiler-content {
+    background-color: #333;
+    color: transparent;
+    cursor: pointer;
+    padding: 0 4px;
+    border-radius: 3px;
+    transition: background-color 0.3s, color 0.3s;
+}
 
-        /* Style for when the spoiler is hovered over or clicked (revealed) */
-        .spoiler:hover, .spoiler.revealed {
-            background-color: transparent; /* Makes background transparent */
-            color: initial; /* Reverts text color to default page color */
-        }
+.spoiler-content:hover {
+    background-color: transparent;
+    color: inherit;
+}
  .dropdown { position: relative; display: inline-block; }
-    .dropbtn { background-color: rgb(234, 214, 203); color: rgb(130, 98, 90); padding: 3px;  border: 1px solid rgb(130, 98, 90); cursor: pointer; font-weight: bold; font-size:14px; }  
+    .dropbtn { background-color: rgb(234, 214, 203); color: rgb(78, 103, 128); padding: 3px;  border: 1px solid rgb(157, 127, 111); cursor: pointer; font-weight: bold; font-size:14px; }  
     .dropdown-content { display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; }
     .dropdown-content button { color: black; padding: 12px 16px; text-decoration: none; display: block; border: none; background: none; width: 100%; text-align: left; }
     .dropdown-content button:hover { background-color: #f1f1f1; }
