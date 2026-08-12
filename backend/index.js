@@ -1,20 +1,17 @@
 // index.js
-const { exec } = require('child_process');
-const path = require('path');
+const express = require('express');
+const phpExpress = require('php-express')({ binPath: 'php' });
+const app = express();
 
-// Get absolute path to index.php in the root directory
-const phpFilePath = path.join(__dirname, 'index.php');
+// Set up the PHP engine
+app.engine('php', phpExpress.engine);
+app.all(/.+\\.php$/, phpExpress.router);
 
-// Execute the PHP file using the local PHP CLI
-exec(`php "${phpFilePath}"`, (error, stdout, stderr) => {
-    if (error) {
-        console.error(`Execution Error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.error(`PHP Error: ${stderr}`);
-        return;
-    }
-    // Print the rendered HTML output from the PHP file
-    console.log(stdout); 
+// Route the root directory directly to your index.php
+app.get('/', (req, res) => {
+    res.render('index.php');
+});
+
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
 });
